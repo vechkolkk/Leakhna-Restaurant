@@ -1,0 +1,67 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<section class="container py-5">
+    <div class="receipt">
+        <div class="receipt-header">
+            <div>
+                <p class="eyebrow">Receipt</p>
+                <h1>@Model.Id</h1>
+            </div>
+            <span class="status-pill">@Model.Status</span>
+        </div>
+
+        <dl class="receipt-meta">
+            <div>
+                <dt>Customer</dt>
+                <dd>@Model.CustomerName</dd>
+            </div>
+            <div>
+                <dt>Payment</dt>
+                <dd>@Model.PaymentMethod</dd>
+            </div>
+            <div>
+                <dt>Date</dt>
+                <dd>@Model.CreatedAt.LocalDateTime.ToString("MMM d, yyyy h:mm tt")</dd>
+            </div>
+            <div>
+                <dt>Checkout</dt>
+                <dd>@(Model.IsGuestCheckout ? "Guest" : "Registered")</dd>
+            </div>
+        </dl>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td>@line.MenuItem.Name</td>
+                        <td>@line.Quantity</td>
+                        <td class="text-end">@line.LineTotal.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="2">Paid total</th>
+                    <th class="text-end">@Model.Total.ToString("C")</th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary" asp-controller="Menu" asp-action="Index">Order Again</a>
+            <a class="btn btn-outline-dark" asp-controller="Admin" asp-action="Index">View Admin Dashboard</a>
+        </div>
+    </div>
+</section>

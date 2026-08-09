@@ -8,12 +8,15 @@ node_modules/
 # Environment files
 .env
 .env.*
+.aspnet-data-protection-keys/
 
 # Build outputs
 dist/
 build/
 .next/
 out/
+bin/
+obj/
 
 # Logs
 *.log

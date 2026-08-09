@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Online Ordering";
+    var featuredItems = ViewBag.FeaturedItems as IReadOnlyList<MenuItem> ?? [];
+}
+
+<section class="hero-band">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <p class="eyebrow">Fresh online ordering</p>
+                <h1>Leakhna's Restaurant</h1>
+                <p class="lead">Browse dishes with ingredients and calorie estimates, build a cart, and receive a receipt after checkout.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-lg" asp-controller="Menu" asp-action="Index">Browse Menu</a>
+                    <a class="btn btn-outline-dark btn-lg" asp-controller="Cart" asp-action="Index">View Cart</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="menu-preview-grid">
+                    @foreach (var item in featuredItems)
+                    {
+                        <article class="dish-tile @item.AccentClass">
+                            <span>@item.Category</span>
+                            <strong>@item.Name</strong>
+                            <small>@item.EstimatedCalories calories</small>
+                        </article>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <h2 class="section-heading">Customers</h2>
+            <p>Order as a guest today, with registered account history planned for the Identity integration pass.</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="section-heading">Receipts</h2>
+            <p>Every checkout creates a receipt with item totals, payment method, status, and timestamp.</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="section-heading">Admin</h2>
+            <p>The admin dashboard tracks menu coverage, receipt count, sales totals, and recent orders.</p>
+        </div>
+    </div>
+</section>

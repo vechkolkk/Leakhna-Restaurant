@@ -1,0 +1,85 @@
+@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin";
+}
+
+<section class="page-band">
+    <div class="container py-4">
+        <p class="eyebrow">Administrator</p>
+        <h1 class="page-title">Restaurant dashboard</h1>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="metric-grid">
+        <div class="metric">
+            <span>Menu items</span>
+            <strong>@Model.MenuItems.Count</strong>
+        </div>
+        <div class="metric">
+            <span>Receipts</span>
+            <strong>@Model.ReceiptCount</strong>
+        </div>
+        <div class="metric">
+            <span>Total sales</span>
+            <strong>@Model.TotalSales.ToString("C")</strong>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-5">
+            <h2 class="section-heading">Menu management preview</h2>
+            <div class="list-panel">
+                @foreach (var item in Model.MenuItems)
+                {
+                    <div class="list-row">
+                        <div>
+                            <strong>@item.Name</strong>
+                            <span>@item.Category - @item.EstimatedCalories calories</span>
+                        </div>
+                        <span>@item.Price.ToString("C")</span>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <h2 class="section-heading">Recent receipts</h2>
+            @if (Model.Orders.Count == 0)
+            {
+                <div class="empty-state compact">
+                    <h3>No receipts yet</h3>
+                    <p>Completed checkouts will appear here for the restaurant owner.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Receipt</th>
+                                <th>Customer</th>
+                                <th>Payment</th>
+                                <th>Status</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td>@order.CustomerName</td>
+                                    <td>@order.PaymentMethod</td>
+                                    <td>@order.Status</td>
+                                    <td class="text-end">@order.Total.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>
