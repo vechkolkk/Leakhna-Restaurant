@@ -1,4 +1,13 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+document.querySelectorAll('[data-quantity-stepper]').forEach((stepper) => {
+  const input = stepper.querySelector('input[type="number"]');
 
-// Write your JavaScript code.
+  stepper.querySelectorAll('[data-step]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const step = Number(button.dataset.step);
+      const min = Number(input.min || 0);
+      const max = Number(input.max || 99);
+      const nextValue = Math.min(max, Math.max(min, Number(input.value || 0) + step));
+      input.value = nextValue;
+    });
+  });
+});

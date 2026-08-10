@@ -22,7 +22,7 @@ public class CartController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Add(string id, int quantity = 1)
+    public IActionResult Add(string id, int quantity = 1, string? notes = null)
     {
         var menuItem = _menuService.GetMenuItem(id);
 
@@ -32,7 +32,15 @@ public class CartController : Controller
         }
 
         var cart = GetCart();
-        cart[id] = cart.GetValueOrDefault(id) + quantity;
+        var existing = cart.GetValueOrDefault(id) ?? new CartSessionItem();
+        existing.Quantity += quantity;
+
+        if (!string.IsNullOrWhiteSpace(notes))
+        {
+            existing.Notes = notes.Trim();
+        }
+
+        cart[id] = existing;
         SaveCart(cart);
 
         TempData["CartMessage"] = $"{menuItem.Name} added to cart.";
@@ -41,7 +49,7 @@ public class CartController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Update(string id, int quantity)
+    public IActionResult Update(string id, int quantity, string? notes = null)
     {
         var cart = GetCart();
 
@@ -51,10 +59,31 @@ public class CartController : Controller
         }
         else if (_menuService.GetMenuItem(id) is not null)
         {
-            cart[id] = quantity;
+            cart[id] = new CartSessionItem
+            {
+                Quantity = quantity,
+                Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim()
+            };
         }
 
         SaveCart(cart);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Remove(string id)
+    {
+        var cart = GetCart();
+        var item = _menuService.GetMenuItem(id);
+        cart.Remove(id);
+        SaveCart(cart);
+
+        if (item is not null)
+        {
+            TempData["CartMessage"] = $"{item.Name} removed from cart.";
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -70,8 +99,13 @@ public class CartController : Controller
     {
         var lines = GetCart()
             .Select(entry => new { MenuItem = _menuService.GetMenuItem(entry.Key), Quantity = entry.Value })
-            .Where(entry => entry.MenuItem is not null && entry.Quantity > 0)
-            .Select(entry => new CartLine { MenuItem = entry.MenuItem!, Quantity = entry.Quantity })
+            .Where(entry => entry.MenuItem is not null && entry.Quantity.Quantity > 0)
+            .Select(entry => new CartLine
+            {
+                MenuItem = entry.MenuItem!,
+                Quantity = entry.Quantity.Quantity,
+                Notes = entry.Quantity.Notes
+            })
             .ToList();
 
         return new CartViewModel { Lines = lines };
@@ -82,7 +116,7 @@ public class CartController : Controller
         SaveCart([]);
     }
 
-    private Dictionary<string, int> GetCart()
+    private Dictionary<string, CartSessionItem> GetCart()
     {
         var json = HttpContext.Session.GetString(CartSessionKey);
 
@@ -91,10 +125,20 @@ public class CartController : Controller
             return [];
         }
 
-        return JsonSerializer.Deserialize<Dictionary<string, int>>(json) ?? [];
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, CartSessionItem>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            var legacyCart = JsonSerializer.Deserialize<Dictionary<string, int>>(json) ?? [];
+            return legacyCart.ToDictionary(
+                entry => entry.Key,
+                entry => new CartSessionItem { Quantity = entry.Value });
+        }
     }
 
-    private void SaveCart(Dictionary<string, int> cart)
+    private void SaveCart(Dictionary<string, CartSessionItem> cart)
     {
         HttpContext.Session.SetString(CartSessionKey, JsonSerializer.Serialize(cart));
     }

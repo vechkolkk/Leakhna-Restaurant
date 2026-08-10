@@ -54,7 +54,13 @@
                 @foreach (var line in Model.Lines)
                 {
                     <tr>
-                        <td>@line.MenuItem.Name</td>
+                        <td>
+                            @line.MenuItem.Name
+                            @if (!string.IsNullOrWhiteSpace(line.Notes))
+                            {
+                                <div class="text-muted">@line.Notes</div>
+                            }
+                        </td>
                         <td>@line.Quantity</td>
                         <td class="text-end">@line.LineTotal.ToString("C")</td>
                     </tr>

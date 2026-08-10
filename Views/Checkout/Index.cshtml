@@ -131,7 +131,13 @@
                 @foreach (var line in cart.Lines)
                 {
                     <div class="summary-line">
-                        <span>@line.Quantity x @line.MenuItem.Name</span>
+                        <span>
+                            @line.Quantity x @line.MenuItem.Name
+                            @if (!string.IsNullOrWhiteSpace(line.Notes))
+                            {
+                                <small>@line.Notes</small>
+                            }
+                        </span>
                         <strong>@line.LineTotal.ToString("C")</strong>
                     </div>
                 }

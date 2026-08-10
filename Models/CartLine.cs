@@ -6,5 +6,7 @@ public class CartLine
 
     public int Quantity { get; set; }
 
+    public string? Notes { get; set; }
+
     public decimal LineTotal => MenuItem.Price * Quantity;
 }

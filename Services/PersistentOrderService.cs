@@ -36,7 +36,8 @@ public class PersistentOrderService : IOrderService
             Lines = cart.Lines.Select(line => new CartLine
             {
                 MenuItem = line.MenuItem,
-                Quantity = line.Quantity
+                Quantity = line.Quantity,
+                Notes = line.Notes
             }).ToList()
         };
 
