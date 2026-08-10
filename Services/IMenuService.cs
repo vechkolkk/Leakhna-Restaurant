@@ -9,4 +9,10 @@ public interface IMenuService
     MenuItem? GetMenuItem(string id);
 
     IReadOnlyList<string> GetCategories();
+
+    MenuItem AddMenuItem(MenuItem item);
+
+    bool UpdateMenuItem(MenuItem item);
+
+    bool DeleteMenuItem(string id);
 }

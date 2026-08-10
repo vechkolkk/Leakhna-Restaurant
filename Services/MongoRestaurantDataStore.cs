@@ -1,0 +1,124 @@
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
+using RestaurantApp.Models;
+using RestaurantApp.Options;
+
+namespace RestaurantApp.Services;
+
+public class MongoRestaurantDataStore : IRestaurantDataStore
+{
+    private readonly IMongoCollection<MenuItem> _menuItems;
+    private readonly IMongoCollection<Order> _orders;
+    private readonly IMongoCollection<UserAccount> _users;
+
+    public MongoRestaurantDataStore(IOptions<MongoDbOptions> options)
+    {
+        if (string.IsNullOrWhiteSpace(options.Value.ConnectionString))
+        {
+            throw new InvalidOperationException("MongoDb:ConnectionString is required when Persistence:Provider is MongoDb.");
+        }
+
+        var client = new MongoClient(options.Value.ConnectionString);
+        var database = client.GetDatabase(options.Value.DatabaseName);
+
+        _menuItems = database.GetCollection<MenuItem>(options.Value.MenuItemsCollection);
+        _orders = database.GetCollection<Order>(options.Value.OrdersCollection);
+        _users = database.GetCollection<UserAccount>(options.Value.UsersCollection);
+
+        EnsureSeedData();
+        EnsureIndexes();
+    }
+
+    public RestaurantDataSnapshot GetSnapshot()
+    {
+        return new RestaurantDataSnapshot
+        {
+            MenuItems = _menuItems.Find(Builders<MenuItem>.Filter.Empty).ToList(),
+            Users = _users.Find(Builders<UserAccount>.Filter.Empty).ToList(),
+            Orders = _orders
+                .Find(Builders<Order>.Filter.Empty)
+                .SortByDescending(order => order.CreatedAt)
+                .ToList()
+        };
+    }
+
+    public void SaveSnapshot(RestaurantDataSnapshot snapshot)
+    {
+        _menuItems.DeleteMany(Builders<MenuItem>.Filter.Empty);
+        _users.DeleteMany(Builders<UserAccount>.Filter.Empty);
+        _orders.DeleteMany(Builders<Order>.Filter.Empty);
+
+        if (snapshot.MenuItems.Count > 0)
+        {
+            _menuItems.InsertMany(snapshot.MenuItems);
+        }
+
+        if (snapshot.Users.Count > 0)
+        {
+            _users.InsertMany(snapshot.Users);
+        }
+
+        if (snapshot.Orders.Count > 0)
+        {
+            _orders.InsertMany(snapshot.Orders);
+        }
+    }
+
+    public UserAccount AddUser(UserAccount user)
+    {
+        _users.InsertOne(user);
+        return user;
+    }
+
+    public Order AddOrder(Order order)
+    {
+        _orders.InsertOne(order);
+        return order;
+    }
+
+    private void EnsureSeedData()
+    {
+        if (_menuItems.CountDocuments(Builders<MenuItem>.Filter.Empty) == 0)
+        {
+            _menuItems.InsertMany(SeedData.MenuItems.Select(CloneMenuItem));
+        }
+
+        if (_users.CountDocuments(Builders<UserAccount>.Filter.Empty) == 0)
+        {
+            _users.InsertMany(SeedData.Users);
+        }
+    }
+
+    private void EnsureIndexes()
+    {
+        _users.Indexes.CreateOne(new CreateIndexModel<UserAccount>(
+            Builders<UserAccount>.IndexKeys.Ascending(user => user.Email),
+            new CreateIndexOptions { Unique = true }));
+
+        _orders.Indexes.CreateOne(new CreateIndexModel<Order>(
+            Builders<Order>.IndexKeys.Ascending(order => order.Id),
+            new CreateIndexOptions { Unique = true }));
+
+        _orders.Indexes.CreateOne(new CreateIndexModel<Order>(
+            Builders<Order>.IndexKeys.Ascending(order => order.CustomerId)));
+
+        _menuItems.Indexes.CreateOne(new CreateIndexModel<MenuItem>(
+            Builders<MenuItem>.IndexKeys.Ascending(item => item.Category)));
+    }
+
+    private static MenuItem CloneMenuItem(MenuItem item)
+    {
+        return new MenuItem
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Category = item.Category,
+            Description = item.Description,
+            Ingredients = item.Ingredients.ToList(),
+            EstimatedCalories = item.EstimatedCalories,
+            Price = item.Price,
+            IsAvailable = item.IsAvailable,
+            AccentClass = item.AccentClass
+        };
+    }
+}

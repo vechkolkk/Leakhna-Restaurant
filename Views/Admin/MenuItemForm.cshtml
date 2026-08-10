@@ -1,0 +1,83 @@
+@model MenuItemFormViewModel
+
+@{
+    var isEdit = !string.IsNullOrWhiteSpace(Model.Id);
+    ViewData["Title"] = isEdit ? "Edit Menu Item" : "Add Menu Item";
+    var accentClasses = ViewBag.AccentClasses as IReadOnlyList<string> ?? [];
+}
+
+<section class="page-band">
+    <div class="container py-4">
+        <p class="eyebrow">Administrator</p>
+        <h1 class="page-title">@(isEdit ? "Edit menu item" : "Add menu item")</h1>
+    </div>
+</section>
+
+<section class="container py-4">
+    <form asp-action="@(isEdit ? "EditMenuItem" : "CreateMenuItem")" asp-route-id="@Model.Id" method="post" class="checkout-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Category" class="form-label"></label>
+                <input asp-for="Category" class="form-control" list="category-options" />
+                <datalist id="category-options">
+                    <option value="Appetizers"></option>
+                    <option value="Mains"></option>
+                    <option value="Desserts"></option>
+                    <option value="Drinks"></option>
+                </datalist>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="IngredientsText" class="form-label"></label>
+                <input asp-for="IngredientsText" class="form-control" placeholder="Chicken, Lemongrass, Jasmine rice" />
+                <span asp-validation-for="IngredientsText" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="EstimatedCalories" class="form-label"></label>
+                <input asp-for="EstimatedCalories" class="form-control" />
+                <span asp-validation-for="EstimatedCalories" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Price" class="form-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="AccentClass" class="form-label"></label>
+                <select asp-for="AccentClass" class="form-select">
+                    @foreach (var accentClass in accentClasses)
+                    {
+                        <option value="@accentClass">@accentClass.Replace("accent-", "")</option>
+                    }
+                </select>
+                <span asp-validation-for="AccentClass" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <div class="form-check">
+                    <input asp-for="IsAvailable" class="form-check-input" />
+                    <label asp-for="IsAvailable" class="form-check-label"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-primary" type="submit">@(isEdit ? "Save Changes" : "Add Item")</button>
+            <a class="btn btn-outline-dark" asp-action="Index">Back to Dashboard</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

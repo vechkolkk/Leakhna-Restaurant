@@ -9,6 +9,7 @@ node_modules/
 .env
 .env.*
 .aspnet-data-protection-keys/
+App_Data/
 
 # Build outputs
 dist/

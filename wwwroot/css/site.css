@@ -449,6 +449,22 @@ a:hover {
   padding: .85rem 0;
 }
 
+.menu-admin-row {
+  align-items: flex-start;
+}
+
+.admin-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: flex-end;
+}
+
+.admin-actions form {
+  margin: 0;
+}
+
 .summary-total {
   font-size: 1.2rem;
 }

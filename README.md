@@ -10,6 +10,7 @@ Initial ASP.NET Core MVC application scaffold with menu browsing, cart, customer
 
 - [Product requirements](docs/PRD.md)
 - [ADR 0001: Project direction from proposal](docs/adr/0001-project-direction.md)
+- [MongoDB persistence plan](docs/MONGODB.md)
 
 ## Run Locally
 
@@ -35,3 +36,5 @@ dotnet run
 - Credit card, debit card, PayPal, and e-transfer demo fields
 - Receipt confirmation with payment status and masked payment summary
 - Registered customer receipt history
+- Durable local JSON persistence for development
+- MongoDB Atlas persistence provider

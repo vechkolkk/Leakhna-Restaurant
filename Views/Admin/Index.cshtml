@@ -12,6 +12,11 @@
 </section>
 
 <section class="container py-4">
+    @if (TempData["AdminMessage"] is string message)
+    {
+        <div class="alert alert-info">@message</div>
+    }
+
     <div class="metric-grid">
         <div class="metric">
             <span>Menu items</span>
@@ -33,16 +38,26 @@
 
     <div class="row g-4 mt-1">
         <div class="col-lg-5">
-            <h2 class="section-heading">Menu management preview</h2>
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <h2 class="section-heading mb-0">Menu management</h2>
+                <a class="btn btn-primary" asp-action="CreateMenuItem">Add Item</a>
+            </div>
             <div class="list-panel">
                 @foreach (var item in Model.MenuItems)
                 {
-                    <div class="list-row">
+                    <div class="list-row menu-admin-row">
                         <div>
                             <strong>@item.Name</strong>
-                            <span>@item.Category - @item.EstimatedCalories calories</span>
+                            <span>@item.Category - @item.EstimatedCalories calories - @(item.IsAvailable ? "Available" : "Unavailable")</span>
                         </div>
-                        <span>@item.Price.ToString("C")</span>
+                        <div class="admin-actions">
+                            <span>@item.Price.ToString("C")</span>
+                            <a class="btn btn-outline-dark btn-sm" asp-action="EditMenuItem" asp-route-id="@item.Id">Edit</a>
+                            <form asp-action="DeleteMenuItem" method="post">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                            </form>
+                        </div>
                     </div>
                 }
             </div>

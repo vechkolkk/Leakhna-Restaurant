@@ -1,10 +1,12 @@
+using System.Security.Cryptography;
+using System.Text;
 using RestaurantApp.Models;
 
 namespace RestaurantApp.Services;
 
-public class InMemoryMenuService : IMenuService
+public static class SeedData
 {
-    private readonly List<MenuItem> _menuItems =
+    public static List<MenuItem> MenuItems { get; } =
     [
         new()
         {
@@ -74,65 +76,44 @@ public class InMemoryMenuService : IMenuService
         }
     ];
 
-    public IReadOnlyList<MenuItem> GetMenuItems()
+    public static List<UserAccount> Users
     {
-        return _menuItems.ToList();
-    }
-
-    public MenuItem? GetMenuItem(string id)
-    {
-        return _menuItems.FirstOrDefault(item => item.Id == id);
-    }
-
-    public IReadOnlyList<string> GetCategories()
-    {
-        return _menuItems.Select(item => item.Category).Distinct().OrderBy(category => category).ToList();
-    }
-
-    public MenuItem AddMenuItem(MenuItem item)
-    {
-        item.Id = EnsureUniqueId(item.Id);
-        _menuItems.Add(item);
-        return item;
-    }
-
-    public bool UpdateMenuItem(MenuItem item)
-    {
-        var index = _menuItems.FindIndex(existing => existing.Id == item.Id);
-
-        if (index < 0)
+        get
         {
-            return false;
+            return
+            [
+                CreateUser("Administrator", "admin@leakhnas.local", "Admin123!", UserRoles.Administrator),
+                CreateUser("Demo Customer", "customer@leakhnas.local", "Customer123!", UserRoles.Customer)
+            ];
         }
-
-        _menuItems[index] = item;
-        return true;
     }
 
-    public bool DeleteMenuItem(string id)
+    public static UserAccount CreateUser(string fullName, string email, string password, string role)
     {
-        var item = GetMenuItem(id);
+        var salt = PasswordHasher.CreateSalt();
 
-        if (item is null)
+        return new UserAccount
         {
-            return false;
-        }
+            Id = Guid.NewGuid().ToString("N"),
+            FullName = fullName,
+            Email = email.Trim().ToLowerInvariant(),
+            Role = role,
+            PasswordSalt = salt,
+            PasswordHash = PasswordHasher.HashPassword(password, salt)
+        };
+    }
+}
 
-        _menuItems.Remove(item);
-        return true;
+public static class PasswordHasher
+{
+    public static string CreateSalt()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
     }
 
-    private string EnsureUniqueId(string id)
+    public static string HashPassword(string password, string salt)
     {
-        var candidate = id;
-        var suffix = 2;
-
-        while (_menuItems.Any(item => item.Id == candidate))
-        {
-            candidate = $"{id}-{suffix}";
-            suffix++;
-        }
-
-        return candidate;
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{salt}:{password}"));
+        return Convert.ToBase64String(bytes);
     }
 }
