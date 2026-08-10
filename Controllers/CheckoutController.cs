@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantApp.Models;
@@ -106,6 +107,44 @@ public class CheckoutController : Controller
         }
 
         return View(order);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Reorder(string id)
+    {
+        var order = _orderService.GetOrder(id);
+
+        if (order is null)
+        {
+            return NotFound();
+        }
+
+        if (!CanViewOrder(order))
+        {
+            return Challenge();
+        }
+
+        var restoredItems = order.Lines
+            .Where(line => line.Quantity > 0 && _menuService.GetMenuItem(line.MenuItem.Id) is { IsAvailable: true })
+            .GroupBy(line => line.MenuItem.Id)
+            .ToDictionary(
+                group => group.Key,
+                group => new CartSessionItem
+                {
+                    Quantity = group.Sum(line => line.Quantity),
+                    Notes = group.LastOrDefault(line => !string.IsNullOrWhiteSpace(line.Notes))?.Notes
+                });
+
+        if (restoredItems.Count == 0)
+        {
+            TempData["CartMessage"] = "None of the items from that receipt are currently available.";
+            return RedirectToAction("Index", "Menu");
+        }
+
+        HttpContext.Session.SetString(CartController.CartSessionKey, JsonSerializer.Serialize(restoredItems));
+        TempData["CartMessage"] = $"{restoredItems.Sum(item => item.Value.Quantity)} item(s) restored from receipt {order.Id}.";
+        return RedirectToAction("Index", "Cart");
     }
 
     private static IReadOnlyList<string> PaymentMethods { get; } =

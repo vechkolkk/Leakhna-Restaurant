@@ -7,7 +7,7 @@ namespace RestaurantApp.Controllers;
 
 public class CartController : Controller
 {
-    private const string CartSessionKey = "RestaurantCart";
+    public const string CartSessionKey = "RestaurantCart";
     private readonly IMenuService _menuService;
 
     public CartController(IMenuService menuService)

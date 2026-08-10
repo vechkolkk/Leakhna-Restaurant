@@ -609,6 +609,15 @@ a:hover {
   margin-bottom: .35rem;
 }
 
+.receipt-actions {
+  white-space: nowrap;
+}
+
+.receipt-actions form {
+  display: inline-block;
+  margin-left: .35rem;
+}
+
 .receipt-meta dt {
   color: var(--muted);
   font-family: Arial, Helvetica, sans-serif;

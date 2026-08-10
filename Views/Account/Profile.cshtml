@@ -67,8 +67,12 @@
                                     <td>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</td>
                                     <td>@order.PaymentMethod</td>
                                     <td>@order.Status</td>
-                                    <td>
+                                    <td class="receipt-actions">
                                         <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
+                                        <form asp-controller="Checkout" asp-action="Reorder" method="post">
+                                            <input type="hidden" name="id" value="@order.Id" />
+                                            <button class="btn btn-primary btn-sm" type="submit">Reorder</button>
+                                        </form>
                                     </td>
                                     <td class="text-end">@order.Tax.ToString("C")</td>
                                     <td class="text-end">@order.Total.ToString("C")</td>
