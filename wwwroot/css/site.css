@@ -588,7 +588,7 @@ a:hover {
 .metric-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .metric {
@@ -612,6 +612,39 @@ a:hover {
   font-size: 2rem;
 }
 
+.report-filter {
+  align-items: end;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(65, 43, 26, .08);
+  display: grid;
+  gap: .85rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.report-filter .form-label {
+  color: var(--muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.report-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-grid h3 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  margin-bottom: .75rem;
+}
+
 .footer {
   background: var(--charcoal);
   bottom: 0;
@@ -630,6 +663,10 @@ a:hover {
 }
 
 @media (max-width: 991.98px) {
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .nav-pills-row {
     align-items: stretch;
     border-radius: 8px;
@@ -638,6 +675,10 @@ a:hover {
 
   .nav-pills-row .nav-link {
     text-align: center;
+  }
+
+  .report-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -648,6 +689,8 @@ a:hover {
 
   .menu-preview-grid,
   .metric-grid,
+  .report-filter,
+  .report-grid,
   .receipt-meta {
     grid-template-columns: 1fr;
   }

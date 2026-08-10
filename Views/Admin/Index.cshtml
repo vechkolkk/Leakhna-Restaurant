@@ -34,10 +34,14 @@
             <span>Tax collected</span>
             <strong>@Model.TotalTax.ToString("C")</strong>
         </div>
+        <div class="metric">
+            <span>Average order</span>
+            <strong>@Model.AverageOrderValue.ToString("C")</strong>
+        </div>
     </div>
 
     <div class="row g-4 mt-1">
-        <div class="col-lg-5">
+        <div class="col-lg-4">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                 <h2 class="section-heading mb-0">Menu management</h2>
                 <a class="btn btn-primary" asp-action="CreateMenuItem">Add Item</a>
@@ -62,13 +66,85 @@
                 }
             </div>
         </div>
-        <div class="col-lg-7">
-            <h2 class="section-heading">Recent receipts</h2>
+        <div class="col-lg-8">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                <h2 class="section-heading mb-0">Sales reports</h2>
+                <a class="btn btn-outline-dark btn-sm" asp-action="Index">Reset Filters</a>
+            </div>
+
+            <form asp-action="Index" method="get" class="report-filter">
+                <div>
+                    <label class="form-label" asp-for="DateFrom">From</label>
+                    <input class="form-control" asp-for="DateFrom" type="date" />
+                </div>
+                <div>
+                    <label class="form-label" asp-for="DateTo">To</label>
+                    <input class="form-control" asp-for="DateTo" type="date" />
+                </div>
+                <div>
+                    <label class="form-label" asp-for="PaymentMethod">Payment</label>
+                    <select class="form-select" asp-for="PaymentMethod">
+                        <option value="">All payments</option>
+                        @foreach (var method in Model.PaymentMethods)
+                        {
+                            <option value="@method">@method</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label" asp-for="OrderStatus">Status</label>
+                    <select class="form-select" asp-for="OrderStatus">
+                        <option value="">All statuses</option>
+                        @foreach (var status in Model.OrderStatuses)
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label" asp-for="Search">Search</label>
+                    <input class="form-control" asp-for="Search" placeholder="Receipt, customer, email" />
+                </div>
+                <button class="btn btn-primary" type="submit">Apply</button>
+            </form>
+
+            <div class="report-grid">
+                <div class="summary-panel">
+                    <h3>By payment type</h3>
+                    @if (Model.PaymentBreakdown.Count == 0)
+                    {
+                        <p class="text-muted">No payment data for this filter.</p>
+                    }
+                    @foreach (var item in Model.PaymentBreakdown)
+                    {
+                        <div class="summary-line">
+                            <span>@item.Label <small>@item.Count receipt(s)</small></span>
+                            <strong>@item.Total.ToString("C")</strong>
+                        </div>
+                    }
+                </div>
+                <div class="summary-panel">
+                    <h3>By order status</h3>
+                    @if (Model.StatusBreakdown.Count == 0)
+                    {
+                        <p class="text-muted">No status data for this filter.</p>
+                    }
+                    @foreach (var item in Model.StatusBreakdown)
+                    {
+                        <div class="summary-line">
+                            <span>@item.Label <small>@item.Count receipt(s)</small></span>
+                            <strong>@item.Total.ToString("C")</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <h2 class="section-heading mt-4">Receipts</h2>
             @if (Model.Orders.Count == 0)
             {
                 <div class="empty-state compact">
-                    <h3>No receipts yet</h3>
-                    <p>Completed checkouts will appear here for the restaurant owner.</p>
+                    <h3>No receipts match this view</h3>
+                    <p>Completed checkouts will appear here for the restaurant owner. Try clearing filters if you expected results.</p>
                 </div>
             }
             else
@@ -78,9 +154,11 @@
                         <thead>
                             <tr>
                                 <th>Receipt</th>
+                                <th>Date</th>
                                 <th>Customer</th>
                                 <th>Payment</th>
                                 <th>Status</th>
+                                <th>Type</th>
                                 <th class="text-end">Tax</th>
                                 <th class="text-end">Total</th>
                             </tr>
@@ -90,9 +168,11 @@
                             {
                                 <tr>
                                     <td>@order.Id</td>
+                                    <td>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</td>
                                     <td>@order.CustomerName</td>
                                     <td>@order.PaymentMethod</td>
                                     <td>@order.Status</td>
+                                    <td>@order.OrderType</td>
                                     <td class="text-end">@order.Tax.ToString("C")</td>
                                     <td class="text-end">@order.Total.ToString("C")</td>
                                 </tr>

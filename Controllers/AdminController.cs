@@ -17,12 +17,24 @@ public class AdminController : Controller
         _orderService = orderService;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(DateTime? dateFrom, DateTime? dateTo, string? paymentMethod, string? orderStatus, string? search)
     {
+        var allOrders = _orderService.GetOrders();
+        var filteredOrders = ApplyOrderFilters(allOrders, dateFrom, dateTo, paymentMethod, orderStatus, search);
+
         return View(new AdminDashboardViewModel
         {
             MenuItems = _menuService.GetMenuItems(),
-            Orders = _orderService.GetOrders()
+            Orders = filteredOrders,
+            DateFrom = dateFrom,
+            DateTo = dateTo,
+            PaymentMethod = paymentMethod,
+            OrderStatus = orderStatus,
+            Search = search,
+            PaymentMethods = allOrders.Select(order => order.PaymentMethod).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct().OrderBy(value => value).ToList(),
+            OrderStatuses = allOrders.Select(order => order.Status).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct().OrderBy(value => value).ToList(),
+            PaymentBreakdown = BuildBreakdown(filteredOrders, order => order.PaymentMethod),
+            StatusBreakdown = BuildBreakdown(filteredOrders, order => order.Status)
         });
     }
 
@@ -106,4 +118,59 @@ public class AdminController : Controller
         "accent-orange",
         "accent-blue"
     ];
+
+    private static IReadOnlyList<Order> ApplyOrderFilters(
+        IReadOnlyList<Order> orders,
+        DateTime? dateFrom,
+        DateTime? dateTo,
+        string? paymentMethod,
+        string? orderStatus,
+        string? search)
+    {
+        var query = orders.AsEnumerable();
+
+        if (dateFrom.HasValue)
+        {
+            query = query.Where(order => order.CreatedAt.LocalDateTime.Date >= dateFrom.Value.Date);
+        }
+
+        if (dateTo.HasValue)
+        {
+            query = query.Where(order => order.CreatedAt.LocalDateTime.Date <= dateTo.Value.Date);
+        }
+
+        if (!string.IsNullOrWhiteSpace(paymentMethod))
+        {
+            query = query.Where(order => order.PaymentMethod.Equals(paymentMethod, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(orderStatus))
+        {
+            query = query.Where(order => order.Status.Equals(orderStatus, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(order =>
+                order.Id.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                order.CustomerName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                order.Email?.Contains(search, StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        return query.OrderByDescending(order => order.CreatedAt).ToList();
+    }
+
+    private static IReadOnlyList<SalesBreakdownItem> BuildBreakdown(IReadOnlyList<Order> orders, Func<Order, string> labelSelector)
+    {
+        return orders
+            .GroupBy(labelSelector)
+            .Select(group => new SalesBreakdownItem
+            {
+                Label = string.IsNullOrWhiteSpace(group.Key) ? "Unknown" : group.Key,
+                Count = group.Count(),
+                Total = group.Sum(order => order.Total)
+            })
+            .OrderByDescending(item => item.Total)
+            .ToList();
+    }
 }
