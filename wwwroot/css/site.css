@@ -537,6 +537,18 @@ a:hover {
   margin: 0;
 }
 
+.status-form {
+  align-items: center;
+  display: grid;
+  gap: .5rem;
+  grid-template-columns: minmax(150px, 1fr) auto;
+  min-width: 250px;
+}
+
+.status-form .form-select {
+  min-height: 36px;
+}
+
 .summary-total {
   font-size: 1.2rem;
 }
@@ -722,5 +734,9 @@ a:hover {
 
   .cart-summary-sticky {
     position: static;
+  }
+
+  .status-form {
+    min-width: 0;
   }
 }

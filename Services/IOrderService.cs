@@ -11,4 +11,6 @@ public interface IOrderService
     IReadOnlyList<Order> GetOrdersForCustomer(string customerId, string email);
 
     Order? GetOrder(string id);
+
+    bool UpdateOrderStatus(string id, string status);
 }

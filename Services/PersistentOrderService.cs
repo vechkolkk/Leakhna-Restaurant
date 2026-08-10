@@ -61,6 +61,16 @@ public class PersistentOrderService : IOrderService
         return GetOrders().FirstOrDefault(order => order.Id == id);
     }
 
+    public bool UpdateOrderStatus(string id, string status)
+    {
+        if (!OrderStatusOptions.All.Contains(status))
+        {
+            return false;
+        }
+
+        return _dataStore.UpdateOrderStatus(id, status, GetPaymentStatus(status));
+    }
+
     private static string BuildPaymentSummary(CheckoutViewModel checkout)
     {
         return checkout.PaymentMethod switch
@@ -71,6 +81,16 @@ public class PersistentOrderService : IOrderService
             "PayPal" => $"PayPal account {checkout.PayPalEmail}",
             "E-Transfer" => $"Reference {checkout.ETransferReference} from {checkout.ETransferSenderName}",
             _ => checkout.PaymentMethod
+        };
+    }
+
+    private static string GetPaymentStatus(string status)
+    {
+        return status switch
+        {
+            "Awaiting Verification" => "Pending Verification",
+            "Cancelled" => "Cancelled",
+            _ => "Paid"
         };
     }
 }

@@ -20,6 +20,8 @@ public class AdminDashboardViewModel
 
     public IReadOnlyList<string> OrderStatuses { get; set; } = [];
 
+    public IReadOnlyList<string> AvailableOrderStatuses { get; set; } = OrderStatusOptions.All;
+
     public IReadOnlyList<SalesBreakdownItem> PaymentBreakdown { get; set; } = [];
 
     public IReadOnlyList<SalesBreakdownItem> StatusBreakdown { get; set; } = [];

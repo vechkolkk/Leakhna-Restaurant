@@ -76,6 +76,16 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         return order;
     }
 
+    public bool UpdateOrderStatus(string id, string status, string paymentStatus)
+    {
+        var update = Builders<Order>.Update
+            .Set(order => order.Status, status)
+            .Set(order => order.PaymentStatus, paymentStatus);
+
+        var result = _orders.UpdateOne(order => order.Id == id, update);
+        return result.ModifiedCount > 0;
+    }
+
     private void EnsureSeedData()
     {
         if (_menuItems.CountDocuments(Builders<MenuItem>.Filter.Empty) == 0)

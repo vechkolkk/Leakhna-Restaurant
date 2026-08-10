@@ -63,6 +63,25 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         }
     }
 
+    public bool UpdateOrderStatus(string id, string status, string paymentStatus)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            var order = snapshot.Orders.FirstOrDefault(order => order.Id == id);
+
+            if (order is null)
+            {
+                return false;
+            }
+
+            order.Status = status;
+            order.PaymentStatus = paymentStatus;
+            SaveSnapshot(snapshot);
+            return true;
+        }
+    }
+
     private void EnsureDataFile()
     {
         if (File.Exists(_dataPath))

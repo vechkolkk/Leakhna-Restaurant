@@ -32,10 +32,33 @@ public class AdminController : Controller
             OrderStatus = orderStatus,
             Search = search,
             PaymentMethods = allOrders.Select(order => order.PaymentMethod).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct().OrderBy(value => value).ToList(),
-            OrderStatuses = allOrders.Select(order => order.Status).Where(value => !string.IsNullOrWhiteSpace(value)).Distinct().OrderBy(value => value).ToList(),
+            OrderStatuses = OrderStatusOptions.All
+                .Concat(allOrders.Select(order => order.Status).Where(value => !string.IsNullOrWhiteSpace(value)))
+                .Distinct()
+                .OrderBy(value => value)
+                .ToList(),
+            AvailableOrderStatuses = OrderStatusOptions.All,
             PaymentBreakdown = BuildBreakdown(filteredOrders, order => order.PaymentMethod),
             StatusBreakdown = BuildBreakdown(filteredOrders, order => order.Status)
         });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult UpdateOrderStatus(string orderId, string status)
+    {
+        if (string.IsNullOrWhiteSpace(orderId) || string.IsNullOrWhiteSpace(status))
+        {
+            TempData["AdminMessage"] = "Choose a receipt and status before updating.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var updated = _orderService.UpdateOrderStatus(orderId, status);
+        TempData["AdminMessage"] = updated
+            ? $"{orderId} is now {status}."
+            : $"Could not update {orderId}.";
+
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult CreateMenuItem()

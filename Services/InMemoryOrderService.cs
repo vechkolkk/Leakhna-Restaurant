@@ -71,6 +71,28 @@ public class InMemoryOrderService : IOrderService
         }
     }
 
+    public bool UpdateOrderStatus(string id, string status)
+    {
+        if (!OrderStatusOptions.All.Contains(status))
+        {
+            return false;
+        }
+
+        lock (_lock)
+        {
+            var order = _orders.FirstOrDefault(order => order.Id == id);
+
+            if (order is null)
+            {
+                return false;
+            }
+
+            order.Status = status;
+            order.PaymentStatus = GetPaymentStatus(status);
+            return true;
+        }
+    }
+
     private static string BuildPaymentSummary(CheckoutViewModel checkout)
     {
         return checkout.PaymentMethod switch
@@ -81,6 +103,16 @@ public class InMemoryOrderService : IOrderService
             "PayPal" => $"PayPal account {checkout.PayPalEmail}",
             "E-Transfer" => $"Reference {checkout.ETransferReference} from {checkout.ETransferSenderName}",
             _ => checkout.PaymentMethod
+        };
+    }
+
+    private static string GetPaymentStatus(string status)
+    {
+        return status switch
+        {
+            "Awaiting Verification" => "Pending Verification",
+            "Cancelled" => "Cancelled",
+            _ => "Paid"
         };
     }
 }

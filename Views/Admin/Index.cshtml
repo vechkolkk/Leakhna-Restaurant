@@ -158,6 +158,7 @@
                                 <th>Customer</th>
                                 <th>Payment</th>
                                 <th>Status</th>
+                                <th>Update</th>
                                 <th>Type</th>
                                 <th class="text-end">Tax</th>
                                 <th class="text-end">Total</th>
@@ -172,6 +173,18 @@
                                     <td>@order.CustomerName</td>
                                     <td>@order.PaymentMethod</td>
                                     <td>@order.Status</td>
+                                    <td>
+                                        <form asp-action="UpdateOrderStatus" method="post" class="status-form">
+                                            <input type="hidden" name="orderId" value="@order.Id" />
+                                            <select class="form-select form-select-sm" name="status" aria-label="Update @order.Id status">
+                                                @foreach (var status in Model.AvailableOrderStatuses)
+                                                {
+                                                    <option value="@status" selected="@(status == order.Status)">@status</option>
+                                                }
+                                            </select>
+                                            <button class="btn btn-outline-dark btn-sm" type="submit">Save</button>
+                                        </form>
+                                    </td>
                                     <td>@order.OrderType</td>
                                     <td class="text-end">@order.Tax.ToString("C")</td>
                                     <td class="text-end">@order.Total.ToString("C")</td>
