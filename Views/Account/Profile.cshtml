@@ -12,26 +12,43 @@
 </section>
 
 <section class="container py-4">
+    @if (TempData["ProfileMessage"] is string message)
+    {
+        <div class="alert alert-info">@message</div>
+    }
+
     <div class="row g-4">
         <div class="col-lg-4">
             <aside class="summary-panel">
                 <h2>Account details</h2>
-                <div class="summary-line">
-                    <span>Email</span>
-                    <strong>@Model.User.Email</strong>
-                </div>
-                <div class="summary-line">
-                    <span>Phone</span>
-                    <strong>@(Model.User.Phone ?? "Not set")</strong>
-                </div>
-                <div class="summary-line">
-                    <span>Default address</span>
-                    <strong>@(Model.User.DefaultAddress ?? "Not set")</strong>
-                </div>
-                <div class="summary-line">
-                    <span>Role</span>
-                    <strong>@Model.User.Role</strong>
-                </div>
+                <form asp-action="UpdateProfile" method="post" class="profile-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Profile.FullName"></label>
+                        <input class="form-control" asp-for="Profile.FullName" />
+                        <span class="text-danger" asp-validation-for="Profile.FullName"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" value="@Model.User.Email" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Profile.Phone"></label>
+                        <input class="form-control" asp-for="Profile.Phone" />
+                        <span class="text-danger" asp-validation-for="Profile.Phone"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Profile.DefaultAddress"></label>
+                        <textarea class="form-control" asp-for="Profile.DefaultAddress" rows="3"></textarea>
+                        <span class="text-danger" asp-validation-for="Profile.DefaultAddress"></span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Role</span>
+                        <strong>@Model.User.Role</strong>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-3" type="submit">Save Profile</button>
+                </form>
             </aside>
         </div>
         <div class="col-lg-8">
@@ -85,3 +102,7 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

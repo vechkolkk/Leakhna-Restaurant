@@ -85,8 +85,43 @@ public class AccountController : Controller
         return View(new ProfileViewModel
         {
             User = user,
+            Profile = ProfileUpdateViewModelFromUser(user),
             Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
         });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProfile(ProfileUpdateViewModel profile)
+    {
+        var user = GetCurrentUser();
+
+        if (user is null)
+        {
+            return Challenge();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(nameof(Profile), new ProfileViewModel
+            {
+                User = user,
+                Profile = profile,
+                Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
+            });
+        }
+
+        var updatedUser = _userService.UpdateProfile(user.Id, profile);
+
+        if (updatedUser is null)
+        {
+            return NotFound();
+        }
+
+        await SignInUser(updatedUser, isPersistent: false);
+        TempData["ProfileMessage"] = "Profile updated.";
+        return RedirectToAction(nameof(Profile));
     }
 
     [Authorize]
@@ -107,6 +142,16 @@ public class AccountController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return string.IsNullOrWhiteSpace(userId) ? null : _userService.GetById(userId);
+    }
+
+    private static ProfileUpdateViewModel ProfileUpdateViewModelFromUser(UserAccount user)
+    {
+        return new ProfileUpdateViewModel
+        {
+            FullName = user.FullName,
+            Phone = user.Phone,
+            DefaultAddress = user.DefaultAddress
+        };
     }
 
     private async Task SignInUser(UserAccount user, bool isPersistent)

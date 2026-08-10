@@ -10,6 +10,8 @@ public interface IRestaurantDataStore
 
     UserAccount AddUser(UserAccount user);
 
+    UserAccount? UpdateUserProfile(string id, string fullName, string? phone, string? defaultAddress);
+
     Order AddOrder(Order order);
 
     bool UpdateOrderStatus(string id, string status, string paymentStatus);

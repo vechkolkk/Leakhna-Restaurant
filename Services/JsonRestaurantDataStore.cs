@@ -52,6 +52,26 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         }
     }
 
+    public UserAccount? UpdateUserProfile(string id, string fullName, string? phone, string? defaultAddress)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            var user = snapshot.Users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            user.FullName = fullName;
+            user.Phone = phone;
+            user.DefaultAddress = defaultAddress;
+            SaveSnapshot(snapshot);
+            return user;
+        }
+    }
+
     public Order AddOrder(Order order)
     {
         lock (_lock)

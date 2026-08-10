@@ -55,4 +55,13 @@ public class PersistentUserService : IUserService
     {
         return _dataStore.GetSnapshot().Users.FirstOrDefault(user => user.Email.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
     }
+
+    public UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile)
+    {
+        return _dataStore.UpdateUserProfile(
+            id,
+            profile.FullName.Trim(),
+            string.IsNullOrWhiteSpace(profile.Phone) ? null : profile.Phone.Trim(),
+            string.IsNullOrWhiteSpace(profile.DefaultAddress) ? null : profile.DefaultAddress.Trim());
+    }
 }

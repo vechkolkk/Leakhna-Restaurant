@@ -70,6 +70,17 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         return user;
     }
 
+    public UserAccount? UpdateUserProfile(string id, string fullName, string? phone, string? defaultAddress)
+    {
+        var update = Builders<UserAccount>.Update
+            .Set(user => user.FullName, fullName)
+            .Set(user => user.Phone, phone)
+            .Set(user => user.DefaultAddress, defaultAddress);
+
+        var result = _users.UpdateOne(user => user.Id == id, update);
+        return result.MatchedCount == 0 ? null : _users.Find(user => user.Id == id).FirstOrDefault();
+    }
+
     public Order AddOrder(Order order)
     {
         _orders.InsertOne(order);

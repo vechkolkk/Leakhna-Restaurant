@@ -70,6 +70,24 @@ public class InMemoryUserService : IUserService
         }
     }
 
+    public UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile)
+    {
+        lock (_lock)
+        {
+            var user = _users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            user.FullName = profile.FullName.Trim();
+            user.Phone = string.IsNullOrWhiteSpace(profile.Phone) ? null : profile.Phone.Trim();
+            user.DefaultAddress = string.IsNullOrWhiteSpace(profile.DefaultAddress) ? null : profile.DefaultAddress.Trim();
+            return user;
+        }
+    }
+
     private void AddSeedUser(string fullName, string email, string password, string role)
     {
         var salt = CreateSalt();
