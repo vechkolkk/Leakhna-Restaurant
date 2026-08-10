@@ -760,12 +760,15 @@ a:hover {
 }
 
 .queue-card {
-  align-items: center;
   border-top: 1px solid #eee5d8;
   display: grid;
   gap: .75rem;
-  grid-template-columns: minmax(0, 1fr) minmax(120px, auto) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   padding: .85rem 0;
+}
+
+.queue-card > div:first-child strong {
+  overflow-wrap: anywhere;
 }
 
 .queue-card span {
@@ -776,10 +779,15 @@ a:hover {
 
 .queue-actions {
   align-items: center;
+  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: .5rem;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.queue-actions .btn {
+  white-space: normal;
 }
 
 .queue-actions form {
