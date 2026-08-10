@@ -159,6 +159,7 @@
                                 <th>Payment</th>
                                 <th>Status</th>
                                 <th>Update</th>
+                                <th></th>
                                 <th>Type</th>
                                 <th class="text-end">Tax</th>
                                 <th class="text-end">Total</th>
@@ -184,6 +185,9 @@
                                             </select>
                                             <button class="btn btn-outline-dark btn-sm" type="submit">Save</button>
                                         </form>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
                                     </td>
                                     <td>@order.OrderType</td>
                                     <td class="text-end">@order.Tax.ToString("C")</td>

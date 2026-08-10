@@ -7,6 +7,8 @@ namespace RestaurantApp.Controllers;
 
 public class CheckoutController : Controller
 {
+    private const string LastReceiptSessionKey = "LastReceiptId";
+
     private readonly IMenuService _menuService;
     private readonly IOrderService _orderService;
     private readonly IUserService _userService;
@@ -83,6 +85,7 @@ public class CheckoutController : Controller
         var customer = GetCurrentUser();
         checkout.IsGuestCheckout = customer is null || checkout.IsGuestCheckout;
         var order = _orderService.CreateOrder(checkout, cart, customer);
+        HttpContext.Session.SetString(LastReceiptSessionKey, order.Id);
         ClearCart();
 
         return RedirectToAction(nameof(Confirmation), new { id = order.Id });
@@ -95,6 +98,11 @@ public class CheckoutController : Controller
         if (order is null)
         {
             return NotFound();
+        }
+
+        if (!CanViewOrder(order))
+        {
+            return Challenge();
         }
 
         return View(order);
@@ -118,6 +126,29 @@ public class CheckoutController : Controller
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return string.IsNullOrWhiteSpace(userId) ? null : _userService.GetById(userId);
+    }
+
+    private bool CanViewOrder(Order order)
+    {
+        if (HttpContext.Session.GetString(LastReceiptSessionKey) == order.Id)
+        {
+            return true;
+        }
+
+        if (User.IsInRole(UserRoles.Administrator))
+        {
+            return true;
+        }
+
+        var customer = GetCurrentUser();
+
+        if (customer is null)
+        {
+            return false;
+        }
+
+        return order.CustomerId == customer.Id ||
+            order.Email?.Equals(customer.Email, StringComparison.OrdinalIgnoreCase) == true;
     }
 
     private void ValidatePaymentDetails(CheckoutViewModel checkout)

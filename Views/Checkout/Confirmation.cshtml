@@ -42,6 +42,33 @@
             <p class="receipt-note">@Model.PaymentSummary</p>
         }
 
+        <div class="receipt-detail-grid">
+            <div>
+                <h2>Customer</h2>
+                <p>@Model.CustomerName</p>
+                @if (!string.IsNullOrWhiteSpace(Model.Email))
+                {
+                    <p>@Model.Email</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                {
+                    <p>@Model.Phone</p>
+                }
+            </div>
+            <div>
+                <h2>Fulfillment</h2>
+                <p>@Model.OrderType</p>
+                @if (!string.IsNullOrWhiteSpace(Model.DeliveryAddress))
+                {
+                    <p>@Model.DeliveryAddress</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                {
+                    <p>@Model.Notes</p>
+                }
+            </div>
+        </div>
+
         <table class="table">
             <thead>
                 <tr>
