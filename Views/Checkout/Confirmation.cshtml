@@ -134,7 +134,8 @@
             </tfoot>
         </table>
 
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 receipt-actions-bar">
+            <button class="btn btn-outline-dark" type="button" onclick="window.print()">Print Receipt</button>
             <form asp-action="Reorder" method="post">
                 <input type="hidden" name="id" value="@Model.Id" />
                 <button class="btn btn-primary" type="submit">Order Again</button>
