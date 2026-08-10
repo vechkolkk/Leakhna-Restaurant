@@ -1,0 +1,101 @@
+@model AdminCustomerDetailViewModel
+
+@{
+    ViewData["Title"] = "Customer";
+}
+
+<section class="page-band">
+    <div class="container py-4">
+        <p class="eyebrow">Customer</p>
+        <h1 class="page-title">@Model.Customer.FullName</h1>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a class="btn btn-outline-dark" asp-action="Index">Back to Dashboard</a>
+    </div>
+
+    <div class="metric-grid customer-metric-grid">
+        <div class="metric">
+            <span>Orders</span>
+            <strong>@Model.Customer.OrderCount</strong>
+        </div>
+        <div class="metric">
+            <span>Lifetime spend</span>
+            <strong>@Model.Customer.TotalSpent.ToString("C")</strong>
+        </div>
+        <div class="metric">
+            <span>Average order</span>
+            <strong>@Model.AverageOrderValue.ToString("C")</strong>
+        </div>
+        <div class="metric">
+            <span>Last order</span>
+            <strong>@(Model.Customer.LastOrderAt?.LocalDateTime.ToString("MMM d") ?? "None")</strong>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-4">
+            <aside class="summary-panel">
+                <h2>Profile</h2>
+                <div class="summary-line">
+                    <span>Email</span>
+                    <strong>@Model.Customer.Email</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Phone</span>
+                    <strong>@(Model.Customer.Phone ?? "Not set")</strong>
+                </div>
+                <div class="summary-line">
+                    <span>Default address</span>
+                    <strong>@(Model.Customer.DefaultAddress ?? "Not set")</strong>
+                </div>
+            </aside>
+        </div>
+        <div class="col-lg-8">
+            <h2 class="section-heading">Receipt history</h2>
+            @if (Model.Orders.Count == 0)
+            {
+                <div class="empty-state compact">
+                    <h3>No receipts yet</h3>
+                    <p>This customer has an account but has not completed a checkout.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Receipt</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Type</th>
+                                <th class="text-end">Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders)
+                            {
+                                <tr>
+                                    <td>@order.Id</td>
+                                    <td>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</td>
+                                    <td>@order.Status</td>
+                                    <td>@order.PaymentMethod</td>
+                                    <td>@order.OrderType</td>
+                                    <td class="text-end">@order.Total.ToString("C")</td>
+                                    <td>
+                                        <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</section>

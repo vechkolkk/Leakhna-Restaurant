@@ -632,6 +632,10 @@ a:hover {
   font-size: .9rem;
 }
 
+.customer-metric-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .receipt-meta dt {
   color: var(--muted);
   font-family: Arial, Helvetica, sans-serif;

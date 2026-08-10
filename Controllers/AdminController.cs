@@ -46,6 +46,27 @@ public class AdminController : Controller
         });
     }
 
+    public IActionResult Customer(string id)
+    {
+        var user = _userService.GetById(id);
+
+        if (user is null || user.Role != UserRoles.Customer)
+        {
+            return NotFound();
+        }
+
+        var customerOrders = _orderService
+            .GetOrdersForCustomer(user.Id, user.Email)
+            .OrderByDescending(order => order.CreatedAt)
+            .ToList();
+
+        return View(new AdminCustomerDetailViewModel
+        {
+            Customer = BuildCustomerSummaries([user], customerOrders).Single(),
+            Orders = customerOrders
+        });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult UpdateOrderStatus(string orderId, string status)

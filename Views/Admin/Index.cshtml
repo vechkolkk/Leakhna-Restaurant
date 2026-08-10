@@ -233,7 +233,9 @@
                         {
                             <tr>
                                 <td>
-                                    <strong>@customer.FullName</strong>
+                                    <strong>
+                                        <a asp-action="Customer" asp-route-id="@customer.Id">@customer.FullName</a>
+                                    </strong>
                                     <span>@customer.Email</span>
                                 </td>
                                 <td>@(customer.Phone ?? "Not set")</td>
