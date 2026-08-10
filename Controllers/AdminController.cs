@@ -45,7 +45,8 @@ public class AdminController : Controller
             AvailableOrderStatuses = OrderStatusOptions.All,
             PaymentBreakdown = BuildBreakdown(filteredOrders, order => order.PaymentMethod),
             StatusBreakdown = BuildBreakdown(filteredOrders, order => order.Status),
-            TopDishes = BuildTopDishes(filteredOrders)
+            TopDishes = BuildTopDishes(filteredOrders),
+            DailySales = BuildDailySales(filteredOrders)
         });
     }
 
@@ -282,6 +283,22 @@ public class AdminController : Controller
             .OrderByDescending(item => item.QuantitySold)
             .ThenByDescending(item => item.Revenue)
             .Take(5)
+            .ToList();
+    }
+
+    private static IReadOnlyList<DailySalesItem> BuildDailySales(IReadOnlyList<Order> orders)
+    {
+        return orders
+            .GroupBy(order => order.CreatedAt.LocalDateTime.Date)
+            .Select(group => new DailySalesItem
+            {
+                Date = group.Key,
+                ReceiptCount = group.Count(),
+                Sales = group.Sum(order => order.Total),
+                Tax = group.Sum(order => order.Tax)
+            })
+            .OrderByDescending(item => item.Date)
+            .Take(7)
             .ToList();
     }
 

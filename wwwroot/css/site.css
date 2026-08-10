@@ -748,6 +748,25 @@ a:hover {
   text-align: right;
 }
 
+.daily-sales-row {
+  align-items: center;
+  border-top: 1px solid #eee5d8;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: .85rem 0;
+}
+
+.daily-sales-row span {
+  color: var(--muted);
+  display: block;
+  font-size: .9rem;
+}
+
+.daily-sales-row > div:last-child {
+  text-align: right;
+}
+
 .queue-grid {
   display: grid;
   gap: 1rem;

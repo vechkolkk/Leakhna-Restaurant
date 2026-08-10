@@ -224,6 +224,27 @@
                 }
             </div>
 
+            <div class="summary-panel mt-3">
+                <h3>Daily sales trend</h3>
+                @if (Model.DailySales.Count == 0)
+                {
+                    <p class="text-muted">No daily sales for this filter.</p>
+                }
+                @foreach (var day in Model.DailySales)
+                {
+                    <div class="daily-sales-row">
+                        <div>
+                            <strong>@day.Date.ToString("MMM d, yyyy")</strong>
+                            <span>@day.ReceiptCount receipt(s)</span>
+                        </div>
+                        <div>
+                            <strong>@day.Sales.ToString("C")</strong>
+                            <span>@day.Tax.ToString("C") HST</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
             <h2 class="section-heading mt-4">Receipts</h2>
             @if (Model.Orders.Count == 0)
             {
