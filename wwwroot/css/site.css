@@ -336,6 +336,34 @@ a:hover {
   min-height: 72px;
 }
 
+.menu-filter {
+  align-items: end;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(65, 43, 26, .08);
+  display: grid;
+  gap: .85rem;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, .65fr) auto auto auto;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+}
+
+.menu-filter .form-label {
+  color: var(--muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.filter-check {
+  align-items: center;
+  display: inline-flex;
+  gap: .45rem;
+  min-height: 44px;
+}
+
 .dish-meta,
 .detail-metrics {
   display: flex;
@@ -743,6 +771,10 @@ a:hover {
   .report-filter {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .menu-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 767.98px) {
@@ -751,6 +783,7 @@ a:hover {
   }
 
   .menu-preview-grid,
+  .menu-filter,
   .metric-grid,
   .report-filter,
   .report-grid,
