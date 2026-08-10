@@ -383,6 +383,30 @@ a:hover {
   padding: .4rem .68rem;
 }
 
+.dish-meta .inventory-pill.low,
+.detail-metrics .inventory-pill.low {
+  background: #fff0db;
+  border-color: #e2ae66;
+  color: #8a4d0b;
+}
+
+.dish-meta .inventory-pill.empty,
+.detail-metrics .inventory-pill.empty {
+  background: #fff0f0;
+  border-color: #e7a3a3;
+  color: #8a2424;
+}
+
+.stock-note,
+.admin-inventory-warning {
+  color: var(--rust);
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: .9rem;
+  font-weight: 900;
+  margin-top: .45rem;
+}
+
 .detail-art {
   border: 1px solid rgba(38, 33, 29, .1);
   border-radius: 8px;

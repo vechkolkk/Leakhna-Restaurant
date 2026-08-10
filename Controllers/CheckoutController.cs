@@ -89,6 +89,12 @@ public class CheckoutController : Controller
             return View(checkout);
         }
 
+        if (!_menuService.TryReserveStock(cart.Lines, out var inventoryMessage))
+        {
+            TempData["CartMessage"] = inventoryMessage ?? "One or more cart items are no longer available.";
+            return RedirectToAction("Index", "Cart");
+        }
+
         var customer = GetCurrentUser();
         checkout.IsGuestCheckout = customer is null || checkout.IsGuestCheckout;
         var order = _orderService.CreateOrder(checkout, cart, customer);
@@ -132,13 +138,13 @@ public class CheckoutController : Controller
         }
 
         var restoredItems = order.Lines
-            .Where(line => line.Quantity > 0 && _menuService.GetMenuItem(line.MenuItem.Id) is { IsAvailable: true })
+            .Where(line => line.Quantity > 0 && _menuService.GetMenuItem(line.MenuItem.Id) is { IsOrderable: true })
             .GroupBy(line => line.MenuItem.Id)
             .ToDictionary(
                 group => group.Key,
                 group => new CartSessionItem
                 {
-                    Quantity = group.Sum(line => line.Quantity),
+                    Quantity = Math.Min(group.Sum(line => line.Quantity), _menuService.GetMenuItem(group.Key)?.StockQuantity ?? 0),
                     Notes = group.LastOrDefault(line => !string.IsNullOrWhiteSpace(line.Notes))?.Notes
                 });
 

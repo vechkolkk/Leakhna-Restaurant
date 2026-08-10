@@ -65,6 +65,39 @@ public class PersistentMenuService : IMenuService
         return true;
     }
 
+    public bool TryReserveStock(IReadOnlyList<CartLine> lines, out string? message)
+    {
+        var snapshot = _dataStore.GetSnapshot();
+
+        foreach (var line in lines)
+        {
+            var item = snapshot.MenuItems.FirstOrDefault(existing => existing.Id == line.MenuItem.Id);
+
+            if (item is null || !item.IsOrderable)
+            {
+                message = $"{line.MenuItem.Name} is no longer available.";
+                return false;
+            }
+
+            if (line.Quantity > item.StockQuantity)
+            {
+                message = $"Only {item.StockQuantity} {item.Name} left in stock.";
+                return false;
+            }
+        }
+
+        foreach (var line in lines)
+        {
+            var item = snapshot.MenuItems.First(existing => existing.Id == line.MenuItem.Id);
+            item.StockQuantity -= line.Quantity;
+            item.IsAvailable = item.StockQuantity > 0 && item.IsAvailable;
+        }
+
+        _dataStore.SaveSnapshot(snapshot);
+        message = null;
+        return true;
+    }
+
     private static string EnsureUniqueId(string id, IReadOnlyList<MenuItem> menuItems)
     {
         var candidate = id;

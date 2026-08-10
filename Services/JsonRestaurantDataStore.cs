@@ -154,6 +154,8 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
             EstimatedCalories = item.EstimatedCalories,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
+            StockQuantity = item.StockQuantity,
+            LowStockThreshold = item.LowStockThreshold,
             AccentClass = item.AccentClass
         };
     }

@@ -135,4 +135,34 @@ public class InMemoryMenuService : IMenuService
 
         return candidate;
     }
+
+    public bool TryReserveStock(IReadOnlyList<CartLine> lines, out string? message)
+    {
+        foreach (var line in lines)
+        {
+            var item = GetMenuItem(line.MenuItem.Id);
+
+            if (item is null || !item.IsOrderable)
+            {
+                message = $"{line.MenuItem.Name} is no longer available.";
+                return false;
+            }
+
+            if (line.Quantity > item.StockQuantity)
+            {
+                message = $"Only {item.StockQuantity} {item.Name} left in stock.";
+                return false;
+            }
+        }
+
+        foreach (var line in lines)
+        {
+            var item = GetMenuItem(line.MenuItem.Id)!;
+            item.StockQuantity -= line.Quantity;
+            item.IsAvailable = item.StockQuantity > 0 && item.IsAvailable;
+        }
+
+        message = null;
+        return true;
+    }
 }

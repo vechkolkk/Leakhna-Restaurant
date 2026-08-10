@@ -31,15 +31,16 @@ public class CartController : Controller
             return NotFound();
         }
 
-        if (!menuItem.IsAvailable)
+        if (!menuItem.IsOrderable)
         {
-            TempData["CartMessage"] = $"{menuItem.Name} is currently unavailable.";
+            TempData["CartMessage"] = $"{menuItem.Name} is currently {menuItem.InventoryStatus.ToLowerInvariant()}.";
             return RedirectToAction("Index", "Menu", new { availableOnly = false });
         }
 
         var cart = GetCart();
         var existing = cart.GetValueOrDefault(id) ?? new CartSessionItem();
-        existing.Quantity += quantity;
+        var requestedQuantity = existing.Quantity + quantity;
+        existing.Quantity = Math.Min(requestedQuantity, menuItem.StockQuantity);
 
         if (!string.IsNullOrWhiteSpace(notes))
         {
@@ -49,7 +50,9 @@ public class CartController : Controller
         cart[id] = existing;
         SaveCart(cart);
 
-        TempData["CartMessage"] = $"{menuItem.Name} added to cart.";
+        TempData["CartMessage"] = requestedQuantity > menuItem.StockQuantity
+            ? $"Only {menuItem.StockQuantity} {menuItem.Name} left in stock. Your cart was capped at the available quantity."
+            : $"{menuItem.Name} added to cart.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -63,13 +66,18 @@ public class CartController : Controller
         {
             cart.Remove(id);
         }
-        else if (_menuService.GetMenuItem(id) is { IsAvailable: true })
+        else if (_menuService.GetMenuItem(id) is { IsOrderable: true } menuItem)
         {
             cart[id] = new CartSessionItem
             {
-                Quantity = quantity,
+                Quantity = Math.Min(quantity, menuItem.StockQuantity),
                 Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim()
             };
+
+            if (quantity > menuItem.StockQuantity)
+            {
+                TempData["CartMessage"] = $"Only {menuItem.StockQuantity} {menuItem.Name} left in stock. Your cart was capped at the available quantity.";
+            }
         }
 
         SaveCart(cart);
@@ -105,11 +113,11 @@ public class CartController : Controller
     {
         var lines = GetCart()
             .Select(entry => new { MenuItem = _menuService.GetMenuItem(entry.Key), Quantity = entry.Value })
-            .Where(entry => entry.MenuItem is { IsAvailable: true } && entry.Quantity.Quantity > 0)
+            .Where(entry => entry.MenuItem is { IsOrderable: true } && entry.Quantity.Quantity > 0)
             .Select(entry => new CartLine
             {
                 MenuItem = entry.MenuItem!,
-                Quantity = entry.Quantity.Quantity,
+                Quantity = Math.Min(entry.Quantity.Quantity, entry.MenuItem!.StockQuantity),
                 Notes = entry.Quantity.Notes
             })
             .ToList();

@@ -28,6 +28,14 @@ public class MenuItemFormViewModel
     [Display(Name = "Available")]
     public bool IsAvailable { get; set; } = true;
 
+    [Range(0, 10000)]
+    [Display(Name = "Stock quantity")]
+    public int StockQuantity { get; set; } = 20;
+
+    [Range(0, 10000)]
+    [Display(Name = "Low-stock alert")]
+    public int LowStockThreshold { get; set; } = 5;
+
     [Display(Name = "Color accent")]
     public string AccentClass { get; set; } = "accent-red";
 
@@ -43,6 +51,8 @@ public class MenuItemFormViewModel
             EstimatedCalories = item.EstimatedCalories,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
+            StockQuantity = item.StockQuantity,
+            LowStockThreshold = item.LowStockThreshold,
             AccentClass = item.AccentClass
         };
     }
@@ -61,6 +71,8 @@ public class MenuItemFormViewModel
             EstimatedCalories = EstimatedCalories,
             Price = Price,
             IsAvailable = IsAvailable,
+            StockQuantity = StockQuantity,
+            LowStockThreshold = LowStockThreshold,
             AccentClass = AccentClass
         };
     }

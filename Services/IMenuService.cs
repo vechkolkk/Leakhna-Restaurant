@@ -15,4 +15,6 @@ public interface IMenuService
     bool UpdateMenuItem(MenuItem item);
 
     bool DeleteMenuItem(string id);
+
+    bool TryReserveStock(IReadOnlyList<CartLine> lines, out string? message);
 }

@@ -17,6 +17,8 @@ public static class SeedData
             Ingredients = ["Chicken", "Lemongrass", "Jasmine rice", "Carrot", "Cucumber", "Cilantro"],
             EstimatedCalories = 640,
             Price = 15.99m,
+            StockQuantity = 12,
+            LowStockThreshold = 5,
             AccentClass = "accent-green"
         },
         new()
@@ -28,6 +30,8 @@ public static class SeedData
             Ingredients = ["Beef", "Romaine", "Tomato", "Red onion", "Lime", "Black pepper"],
             EstimatedCalories = 720,
             Price = 18.49m,
+            StockQuantity = 8,
+            LowStockThreshold = 4,
             AccentClass = "accent-red"
         },
         new()
@@ -39,6 +43,8 @@ public static class SeedData
             Ingredients = ["Coconut milk", "Sweet potato", "Bell pepper", "Green beans", "Rice"],
             EstimatedCalories = 590,
             Price = 14.49m,
+            StockQuantity = 10,
+            LowStockThreshold = 5,
             AccentClass = "accent-gold"
         },
         new()
@@ -50,6 +56,8 @@ public static class SeedData
             Ingredients = ["Rice paper", "Rice noodles", "Lettuce", "Mint", "Carrot", "Peanut sauce"],
             EstimatedCalories = 310,
             Price = 8.99m,
+            StockQuantity = 6,
+            LowStockThreshold = 3,
             AccentClass = "accent-teal"
         },
         new()
@@ -61,6 +69,8 @@ public static class SeedData
             Ingredients = ["Mango", "Sticky rice", "Coconut milk", "Sesame"],
             EstimatedCalories = 430,
             Price = 7.99m,
+            StockQuantity = 4,
+            LowStockThreshold = 3,
             AccentClass = "accent-orange"
         },
         new()
@@ -72,6 +82,8 @@ public static class SeedData
             Ingredients = ["Black tea", "Milk", "Sugar", "Ice"],
             EstimatedCalories = 180,
             Price = 4.99m,
+            StockQuantity = 18,
+            LowStockThreshold = 6,
             AccentClass = "accent-blue"
         }
     ];

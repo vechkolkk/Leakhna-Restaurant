@@ -38,6 +38,7 @@
                                 <h2>@line.MenuItem.Name</h2>
                                 <p>@line.MenuItem.Description</p>
                                 <strong>@line.MenuItem.Price.ToString("C") each</strong>
+                                <span class="stock-note">@line.MenuItem.InventoryStatus</span>
                             </div>
                             <form asp-action="Update" method="post" class="cart-item-controls">
                                 <input type="hidden" name="id" value="@line.MenuItem.Id" />
@@ -45,7 +46,7 @@
                                 <label class="form-label" for="quantity-@line.MenuItem.Id">Quantity</label>
                                 <div class="quantity-stepper" data-quantity-stepper>
                                     <button class="btn btn-outline-dark btn-sm" type="button" data-step="-1">-</button>
-                                    <input class="form-control" id="quantity-@line.MenuItem.Id" name="quantity" type="number" value="@line.Quantity" min="0" max="20" />
+                                    <input class="form-control" id="quantity-@line.MenuItem.Id" name="quantity" type="number" value="@line.Quantity" min="0" max="@line.MenuItem.StockQuantity" />
                                     <button class="btn btn-outline-dark btn-sm" type="button" data-step="1">+</button>
                                 </div>
 

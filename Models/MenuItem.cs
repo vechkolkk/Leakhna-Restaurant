@@ -18,5 +18,31 @@ public class MenuItem
 
     public bool IsAvailable { get; set; } = true;
 
+    public int StockQuantity { get; set; } = 20;
+
+    public int LowStockThreshold { get; set; } = 5;
+
     public string AccentClass { get; set; } = "accent-red";
+
+    public bool IsOrderable => IsAvailable && StockQuantity > 0;
+
+    public bool IsLowStock => IsOrderable && StockQuantity <= LowStockThreshold;
+
+    public string InventoryStatus
+    {
+        get
+        {
+            if (!IsAvailable)
+            {
+                return "Unavailable";
+            }
+
+            if (StockQuantity <= 0)
+            {
+                return "Sold out";
+            }
+
+            return IsLowStock ? $"Only {StockQuantity} left" : $"{StockQuantity} in stock";
+        }
+    }
 }

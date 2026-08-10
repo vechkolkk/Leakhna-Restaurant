@@ -23,6 +23,10 @@
             <strong>@Model.MenuItems.Count</strong>
         </div>
         <div class="metric">
+            <span>Low stock</span>
+            <strong>@Model.MenuItems.Count(item => item.IsLowStock)</strong>
+        </div>
+        <div class="metric">
             <span>Receipts</span>
             <strong>@Model.ReceiptCount</strong>
         </div>
@@ -107,7 +111,11 @@
                     <div class="list-row menu-admin-row">
                         <div>
                             <strong>@item.Name</strong>
-                            <span>@item.Category - @item.EstimatedCalories calories - @(item.IsAvailable ? "Available" : "Unavailable")</span>
+                            <span>@item.Category - @item.EstimatedCalories calories - @item.InventoryStatus</span>
+                            @if (item.IsLowStock)
+                            {
+                                <span class="admin-inventory-warning">Restock soon</span>
+                            }
                         </div>
                         <div class="admin-actions">
                             <span>@item.Price.ToString("C")</span>
