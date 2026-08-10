@@ -154,6 +154,41 @@ public class AccountController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public IActionResult CancelOrder(string id)
+    {
+        var user = GetCurrentUser();
+
+        if (user is null)
+        {
+            return Challenge();
+        }
+
+        var order = _orderService.GetOrder(id);
+
+        if (order is null)
+        {
+            return NotFound();
+        }
+
+        if (!IsCustomerOrder(order, user))
+        {
+            return Forbid();
+        }
+
+        if (!OrderStatusOptions.CanCustomerCancel(order.Status))
+        {
+            TempData["ProfileMessage"] = $"Receipt {order.Id} can no longer be cancelled.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        _orderService.UpdateOrderStatus(order.Id, "Cancelled");
+        TempData["ProfileMessage"] = $"Receipt {order.Id} was cancelled.";
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -190,6 +225,12 @@ public class AccountController : Controller
             Password = password ?? new PasswordChangeViewModel(),
             Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
         };
+    }
+
+    private static bool IsCustomerOrder(Order order, UserAccount user)
+    {
+        return order.CustomerId == user.Id ||
+            order.Email?.Equals(user.Email, StringComparison.OrdinalIgnoreCase) == true;
     }
 
     private async Task SignInUser(UserAccount user, bool isPersistent)

@@ -5,6 +5,11 @@
 }
 
 <section class="container py-5">
+    @if (TempData["ReceiptMessage"] is string receiptMessage)
+    {
+        <div class="alert alert-info">@receiptMessage</div>
+    }
+
     <div class="receipt">
         <div class="receipt-header">
             <div>
@@ -116,6 +121,13 @@
             </form>
             @if (User.Identity?.IsAuthenticated == true)
             {
+                @if (OrderStatusOptions.CanCustomerCancel(Model.Status))
+                {
+                    <form asp-action="Cancel" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button class="btn btn-outline-danger" type="submit">Cancel Order</button>
+                    </form>
+                }
                 <a class="btn btn-outline-dark" asp-controller="Account" asp-action="Profile">View Profile</a>
             }
         </div>

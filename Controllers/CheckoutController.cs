@@ -147,6 +147,33 @@ public class CheckoutController : Controller
         return RedirectToAction("Index", "Cart");
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Cancel(string id)
+    {
+        var order = _orderService.GetOrder(id);
+
+        if (order is null)
+        {
+            return NotFound();
+        }
+
+        if (!CanViewOrder(order) || !CanCurrentUserCancel(order))
+        {
+            return Forbid();
+        }
+
+        if (!OrderStatusOptions.CanCustomerCancel(order.Status))
+        {
+            TempData["ReceiptMessage"] = $"Receipt {order.Id} can no longer be cancelled.";
+            return RedirectToAction(nameof(Confirmation), new { id = order.Id });
+        }
+
+        _orderService.UpdateOrderStatus(order.Id, "Cancelled");
+        TempData["ReceiptMessage"] = $"Receipt {order.Id} was cancelled.";
+        return RedirectToAction(nameof(Confirmation), new { id = order.Id });
+    }
+
     private static IReadOnlyList<string> PaymentMethods { get; } =
     [
         "Credit Card",
@@ -179,6 +206,19 @@ public class CheckoutController : Controller
             return true;
         }
 
+        var customer = GetCurrentUser();
+
+        if (customer is null)
+        {
+            return false;
+        }
+
+        return order.CustomerId == customer.Id ||
+            order.Email?.Equals(customer.Email, StringComparison.OrdinalIgnoreCase) == true;
+    }
+
+    private bool CanCurrentUserCancel(Order order)
+    {
         var customer = GetCurrentUser();
 
         if (customer is null)

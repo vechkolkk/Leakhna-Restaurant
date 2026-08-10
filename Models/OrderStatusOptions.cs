@@ -12,4 +12,9 @@ public static class OrderStatusOptions
         "Completed",
         "Cancelled"
     ];
+
+    public static bool CanCustomerCancel(string status)
+    {
+        return status is "Paid" or "Awaiting Verification" or "Preparing";
+    }
 }
