@@ -18,31 +18,30 @@ public class MenuItem
 
     public bool IsAvailable { get; set; } = true;
 
-    public int StockQuantity { get; set; } = 20;
-
-    public int LowStockThreshold { get; set; } = 5;
+    public string AvailabilityLevel { get; set; } = MenuAvailability.Regular;
 
     public string AccentClass { get; set; } = "accent-red";
 
-    public bool IsOrderable => IsAvailable && StockQuantity > 0;
+    public bool IsOrderable => AvailabilityLevel is MenuAvailability.Regular or MenuAvailability.Limited &&
+        IsAvailable;
 
-    public bool IsLowStock => IsOrderable && StockQuantity <= LowStockThreshold;
+    public bool IsLimited => IsAvailable && AvailabilityLevel == MenuAvailability.Limited;
 
-    public string InventoryStatus
+    public string AvailabilityStatus
     {
         get
         {
             if (!IsAvailable)
             {
-                return "Unavailable";
+                return MenuAvailability.Unavailable;
             }
 
-            if (StockQuantity <= 0)
+            if (string.IsNullOrWhiteSpace(AvailabilityLevel))
             {
-                return "Sold out";
+                return MenuAvailability.Regular;
             }
 
-            return IsLowStock ? $"Only {StockQuantity} left" : $"{StockQuantity} in stock";
+            return AvailabilityLevel;
         }
     }
 }

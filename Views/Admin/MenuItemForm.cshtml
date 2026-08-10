@@ -54,14 +54,14 @@
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="col-md-4">
-                <label asp-for="StockQuantity" class="form-label"></label>
-                <input asp-for="StockQuantity" class="form-control" />
-                <span asp-validation-for="StockQuantity" class="text-danger"></span>
-            </div>
-            <div class="col-md-4">
-                <label asp-for="LowStockThreshold" class="form-label"></label>
-                <input asp-for="LowStockThreshold" class="form-control" />
-                <span asp-validation-for="LowStockThreshold" class="text-danger"></span>
+                <label asp-for="AvailabilityLevel" class="form-label"></label>
+                <select asp-for="AvailabilityLevel" class="form-select">
+                    @foreach (var level in MenuAvailability.All)
+                    {
+                        <option value="@level">@level</option>
+                    }
+                </select>
+                <span asp-validation-for="AvailabilityLevel" class="text-danger"></span>
             </div>
             <div class="col-md-4">
                 <label asp-for="AccentClass" class="form-label"></label>

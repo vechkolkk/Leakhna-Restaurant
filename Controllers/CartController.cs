@@ -33,14 +33,13 @@ public class CartController : Controller
 
         if (!menuItem.IsOrderable)
         {
-            TempData["CartMessage"] = $"{menuItem.Name} is currently {menuItem.InventoryStatus.ToLowerInvariant()}.";
+            TempData["CartMessage"] = $"{menuItem.Name} is currently {menuItem.AvailabilityStatus.ToLowerInvariant()}.";
             return RedirectToAction("Index", "Menu", new { availableOnly = false });
         }
 
         var cart = GetCart();
         var existing = cart.GetValueOrDefault(id) ?? new CartSessionItem();
-        var requestedQuantity = existing.Quantity + quantity;
-        existing.Quantity = Math.Min(requestedQuantity, menuItem.StockQuantity);
+        existing.Quantity += quantity;
 
         if (!string.IsNullOrWhiteSpace(notes))
         {
@@ -50,9 +49,7 @@ public class CartController : Controller
         cart[id] = existing;
         SaveCart(cart);
 
-        TempData["CartMessage"] = requestedQuantity > menuItem.StockQuantity
-            ? $"Only {menuItem.StockQuantity} {menuItem.Name} left in stock. Your cart was capped at the available quantity."
-            : $"{menuItem.Name} added to cart.";
+        TempData["CartMessage"] = $"{menuItem.Name} added to cart.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -70,14 +67,9 @@ public class CartController : Controller
         {
             cart[id] = new CartSessionItem
             {
-                Quantity = Math.Min(quantity, menuItem.StockQuantity),
+                Quantity = quantity,
                 Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim()
             };
-
-            if (quantity > menuItem.StockQuantity)
-            {
-                TempData["CartMessage"] = $"Only {menuItem.StockQuantity} {menuItem.Name} left in stock. Your cart was capped at the available quantity.";
-            }
         }
 
         SaveCart(cart);
@@ -117,7 +109,7 @@ public class CartController : Controller
             .Select(entry => new CartLine
             {
                 MenuItem = entry.MenuItem!,
-                Quantity = Math.Min(entry.Quantity.Quantity, entry.MenuItem!.StockQuantity),
+                Quantity = entry.Quantity.Quantity,
                 Notes = entry.Quantity.Notes
             })
             .ToList();

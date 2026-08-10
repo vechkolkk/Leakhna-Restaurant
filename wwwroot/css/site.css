@@ -383,22 +383,22 @@ a:hover {
   padding: .4rem .68rem;
 }
 
-.dish-meta .inventory-pill.low,
-.detail-metrics .inventory-pill.low {
+.dish-meta .availability-pill.limited,
+.detail-metrics .availability-pill.limited {
   background: #fff0db;
   border-color: #e2ae66;
   color: #8a4d0b;
 }
 
-.dish-meta .inventory-pill.empty,
-.detail-metrics .inventory-pill.empty {
+.dish-meta .availability-pill.empty,
+.detail-metrics .availability-pill.empty {
   background: #fff0f0;
   border-color: #e7a3a3;
   color: #8a2424;
 }
 
-.stock-note,
-.admin-inventory-warning {
+.availability-note,
+.admin-availability-warning {
   color: var(--rust);
   display: block;
   font-family: Arial, Helvetica, sans-serif;

@@ -65,7 +65,7 @@ public class PersistentMenuService : IMenuService
         return true;
     }
 
-    public bool TryReserveStock(IReadOnlyList<CartLine> lines, out string? message)
+    public bool ValidateAvailability(IReadOnlyList<CartLine> lines, out string? message)
     {
         var snapshot = _dataStore.GetSnapshot();
 
@@ -75,25 +75,11 @@ public class PersistentMenuService : IMenuService
 
             if (item is null || !item.IsOrderable)
             {
-                message = $"{line.MenuItem.Name} is no longer available.";
-                return false;
-            }
-
-            if (line.Quantity > item.StockQuantity)
-            {
-                message = $"Only {item.StockQuantity} {item.Name} left in stock.";
+                message = $"{line.MenuItem.Name} is currently {line.MenuItem.AvailabilityStatus.ToLowerInvariant()}.";
                 return false;
             }
         }
 
-        foreach (var line in lines)
-        {
-            var item = snapshot.MenuItems.First(existing => existing.Id == line.MenuItem.Id);
-            item.StockQuantity -= line.Quantity;
-            item.IsAvailable = item.StockQuantity > 0 && item.IsAvailable;
-        }
-
-        _dataStore.SaveSnapshot(snapshot);
         message = null;
         return true;
     }

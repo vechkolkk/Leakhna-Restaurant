@@ -89,9 +89,9 @@ public class CheckoutController : Controller
             return View(checkout);
         }
 
-        if (!_menuService.TryReserveStock(cart.Lines, out var inventoryMessage))
+        if (!_menuService.ValidateAvailability(cart.Lines, out var availabilityMessage))
         {
-            TempData["CartMessage"] = inventoryMessage ?? "One or more cart items are no longer available.";
+            TempData["CartMessage"] = availabilityMessage ?? "One or more cart items are no longer available.";
             return RedirectToAction("Index", "Cart");
         }
 
@@ -144,7 +144,7 @@ public class CheckoutController : Controller
                 group => group.Key,
                 group => new CartSessionItem
                 {
-                    Quantity = Math.Min(group.Sum(line => line.Quantity), _menuService.GetMenuItem(group.Key)?.StockQuantity ?? 0),
+                    Quantity = group.Sum(line => line.Quantity),
                     Notes = group.LastOrDefault(line => !string.IsNullOrWhiteSpace(line.Notes))?.Notes
                 });
 
