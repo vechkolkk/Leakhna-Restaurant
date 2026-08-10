@@ -69,4 +69,18 @@ public class PersistentUserService : IUserService
             string.IsNullOrWhiteSpace(profile.Phone) ? null : profile.Phone.Trim(),
             string.IsNullOrWhiteSpace(profile.DefaultAddress) ? null : profile.DefaultAddress.Trim());
     }
+
+    public bool ChangePassword(string id, PasswordChangeViewModel password)
+    {
+        var user = GetById(id);
+
+        if (user is null ||
+            user.PasswordHash != PasswordHasher.HashPassword(password.CurrentPassword, user.PasswordSalt))
+        {
+            return false;
+        }
+
+        var salt = PasswordHasher.CreateSalt();
+        return _dataStore.UpdateUserPassword(id, PasswordHasher.HashPassword(password.NewPassword, salt), salt);
+    }
 }

@@ -15,4 +15,6 @@ public interface IUserService
     IReadOnlyList<UserAccount> GetUsers();
 
     UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile);
+
+    bool ChangePassword(string id, PasswordChangeViewModel password);
 }

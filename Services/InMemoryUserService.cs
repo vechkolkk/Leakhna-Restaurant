@@ -96,6 +96,24 @@ public class InMemoryUserService : IUserService
         }
     }
 
+    public bool ChangePassword(string id, PasswordChangeViewModel password)
+    {
+        lock (_lock)
+        {
+            var user = _users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null || user.PasswordHash != HashPassword(password.CurrentPassword, user.PasswordSalt))
+            {
+                return false;
+            }
+
+            var salt = CreateSalt();
+            user.PasswordSalt = salt;
+            user.PasswordHash = HashPassword(password.NewPassword, salt);
+            return true;
+        }
+    }
+
     private void AddSeedUser(string fullName, string email, string password, string role)
     {
         var salt = CreateSalt();

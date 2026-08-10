@@ -12,6 +12,8 @@ public interface IRestaurantDataStore
 
     UserAccount? UpdateUserProfile(string id, string fullName, string? phone, string? defaultAddress);
 
+    bool UpdateUserPassword(string id, string passwordHash, string passwordSalt);
+
     Order AddOrder(Order order);
 
     bool UpdateOrderStatus(string id, string status, string paymentStatus);

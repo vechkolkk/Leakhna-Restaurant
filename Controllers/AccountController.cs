@@ -127,6 +127,33 @@ public class AccountController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public IActionResult ChangePassword(PasswordChangeViewModel password)
+    {
+        var user = GetCurrentUser();
+
+        if (user is null)
+        {
+            return Challenge();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(nameof(Profile), BuildProfileViewModel(user, password));
+        }
+
+        if (!_userService.ChangePassword(user.Id, password))
+        {
+            ModelState.AddModelError("Password.CurrentPassword", "Current password is incorrect.");
+            return View(nameof(Profile), BuildProfileViewModel(user, password));
+        }
+
+        TempData["ProfileMessage"] = "Password updated.";
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -151,6 +178,17 @@ public class AccountController : Controller
             FullName = user.FullName,
             Phone = user.Phone,
             DefaultAddress = user.DefaultAddress
+        };
+    }
+
+    private ProfileViewModel BuildProfileViewModel(UserAccount user, PasswordChangeViewModel? password = null)
+    {
+        return new ProfileViewModel
+        {
+            User = user,
+            Profile = ProfileUpdateViewModelFromUser(user),
+            Password = password ?? new PasswordChangeViewModel(),
+            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
         };
     }
 

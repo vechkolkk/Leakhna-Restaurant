@@ -6,5 +6,7 @@ public class ProfileViewModel
 
     public ProfileUpdateViewModel Profile { get; set; } = new();
 
+    public PasswordChangeViewModel Password { get; set; } = new();
+
     public IReadOnlyList<Order> Orders { get; set; } = [];
 }

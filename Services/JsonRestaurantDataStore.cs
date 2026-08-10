@@ -72,6 +72,25 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         }
     }
 
+    public bool UpdateUserPassword(string id, string passwordHash, string passwordSalt)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            var user = snapshot.Users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null)
+            {
+                return false;
+            }
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            SaveSnapshot(snapshot);
+            return true;
+        }
+    }
+
     public Order AddOrder(Order order)
     {
         lock (_lock)

@@ -50,6 +50,30 @@
                     <button class="btn btn-primary w-100 mt-3" type="submit">Save Profile</button>
                 </form>
             </aside>
+
+            <aside class="summary-panel mt-4">
+                <h2>Password</h2>
+                <form asp-action="ChangePassword" method="post" class="profile-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Password.CurrentPassword"></label>
+                        <input class="form-control" asp-for="Password.CurrentPassword" />
+                        <span class="text-danger" asp-validation-for="Password.CurrentPassword"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Password.NewPassword"></label>
+                        <input class="form-control" asp-for="Password.NewPassword" />
+                        <span class="text-danger" asp-validation-for="Password.NewPassword"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Password.ConfirmNewPassword"></label>
+                        <input class="form-control" asp-for="Password.ConfirmNewPassword" />
+                        <span class="text-danger" asp-validation-for="Password.ConfirmNewPassword"></span>
+                    </div>
+                    <button class="btn btn-outline-dark w-100" type="submit">Change Password</button>
+                </form>
+            </aside>
         </div>
         <div class="col-lg-8">
             <h2 class="section-heading">Receipt history</h2>

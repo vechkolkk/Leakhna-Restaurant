@@ -81,6 +81,16 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         return result.MatchedCount == 0 ? null : _users.Find(user => user.Id == id).FirstOrDefault();
     }
 
+    public bool UpdateUserPassword(string id, string passwordHash, string passwordSalt)
+    {
+        var update = Builders<UserAccount>.Update
+            .Set(user => user.PasswordHash, passwordHash)
+            .Set(user => user.PasswordSalt, passwordSalt);
+
+        var result = _users.UpdateOne(user => user.Id == id, update);
+        return result.ModifiedCount > 0;
+    }
+
     public Order AddOrder(Order order)
     {
         _orders.InsertOne(order);
