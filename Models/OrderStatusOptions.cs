@@ -17,4 +17,30 @@ public static class OrderStatusOptions
     {
         return status is "Paid" or "Awaiting Verification" or "Preparing";
     }
+
+    public static IReadOnlyList<string> GetCustomerTimeline(string orderType)
+    {
+        return orderType == "Delivery"
+            ? ["Paid", "Preparing", "Out for Delivery", "Completed"]
+            : ["Paid", "Preparing", "Ready for Pickup", "Completed"];
+    }
+
+    public static bool IsTimelineStepComplete(string currentStatus, string step, string orderType)
+    {
+        if (currentStatus == "Cancelled")
+        {
+            return false;
+        }
+
+        if (currentStatus == "Awaiting Verification")
+        {
+            return step == "Paid";
+        }
+
+        var timeline = GetCustomerTimeline(orderType).ToList();
+        var currentIndex = timeline.FindIndex(status => status == currentStatus);
+        var stepIndex = timeline.FindIndex(status => status == step);
+
+        return currentIndex >= 0 && stepIndex >= 0 && stepIndex <= currentIndex;
+    }
 }

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Receipt";
+    var timeline = OrderStatusOptions.GetCustomerTimeline(Model.OrderType);
 }
 
 <section class="container py-5">
@@ -46,6 +47,25 @@
         {
             <p class="receipt-note">@Model.PaymentSummary</p>
         }
+
+        <section class="status-timeline" aria-label="Order status timeline">
+            @foreach (var step in timeline)
+            {
+                var isComplete = OrderStatusOptions.IsTimelineStepComplete(Model.Status, step, Model.OrderType);
+                var isCurrent = Model.Status == step || (Model.Status == "Awaiting Verification" && step == "Paid");
+                <div class="status-step @(isComplete ? "complete" : string.Empty) @(isCurrent ? "current" : string.Empty)">
+                    <span></span>
+                    <strong>@step</strong>
+                </div>
+            }
+            @if (Model.Status == "Cancelled")
+            {
+                <div class="status-step cancelled current">
+                    <span></span>
+                    <strong>Cancelled</strong>
+                </div>
+            }
+        </section>
 
         <div class="receipt-detail-grid">
             <div>
