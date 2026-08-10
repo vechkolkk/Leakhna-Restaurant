@@ -28,6 +28,8 @@ public class AdminDashboardViewModel
 
     public IReadOnlyList<SalesBreakdownItem> StatusBreakdown { get; set; } = [];
 
+    public IReadOnlyList<TopSellingDishItem> TopDishes { get; set; } = [];
+
     public decimal TotalSales => Orders.Sum(order => order.Total);
 
     public decimal TotalTax => Orders.Sum(order => order.Tax);

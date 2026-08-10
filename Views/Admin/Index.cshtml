@@ -152,6 +152,27 @@
                 </div>
             </div>
 
+            <div class="summary-panel mt-3">
+                <h3>Top selling dishes</h3>
+                @if (Model.TopDishes.Count == 0)
+                {
+                    <p class="text-muted">No dish sales for this filter.</p>
+                }
+                @foreach (var dish in Model.TopDishes)
+                {
+                    <div class="top-dish-row">
+                        <div>
+                            <strong>@dish.Name</strong>
+                            <span>@dish.Category</span>
+                        </div>
+                        <div>
+                            <strong>@dish.QuantitySold sold</strong>
+                            <span>@dish.Revenue.ToString("C")</span>
+                        </div>
+                    </div>
+                }
+            </div>
+
             <h2 class="section-heading mt-4">Receipts</h2>
             @if (Model.Orders.Count == 0)
             {

@@ -43,7 +43,8 @@ public class AdminController : Controller
                 .ToList(),
             AvailableOrderStatuses = OrderStatusOptions.All,
             PaymentBreakdown = BuildBreakdown(filteredOrders, order => order.PaymentMethod),
-            StatusBreakdown = BuildBreakdown(filteredOrders, order => order.Status)
+            StatusBreakdown = BuildBreakdown(filteredOrders, order => order.Status),
+            TopDishes = BuildTopDishes(filteredOrders)
         });
     }
 
@@ -257,6 +258,29 @@ public class AdminController : Controller
             })
             .OrderByDescending(customer => customer.LastOrderAt)
             .ThenBy(customer => customer.FullName)
+            .ToList();
+    }
+
+    private static IReadOnlyList<TopSellingDishItem> BuildTopDishes(IReadOnlyList<Order> orders)
+    {
+        return orders
+            .SelectMany(order => order.Lines)
+            .GroupBy(line => line.MenuItem.Id)
+            .Select(group =>
+            {
+                var firstLine = group.First();
+                return new TopSellingDishItem
+                {
+                    MenuItemId = firstLine.MenuItem.Id,
+                    Name = firstLine.MenuItem.Name,
+                    Category = firstLine.MenuItem.Category,
+                    QuantitySold = group.Sum(line => line.Quantity),
+                    Revenue = group.Sum(line => line.LineTotal)
+                };
+            })
+            .OrderByDescending(item => item.QuantitySold)
+            .ThenByDescending(item => item.Revenue)
+            .Take(5)
             .ToList();
     }
 
