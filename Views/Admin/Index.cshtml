@@ -73,7 +73,16 @@
         <div class="col-lg-8">
             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                 <h2 class="section-heading mb-0">Sales reports</h2>
-                <a class="btn btn-outline-dark btn-sm" asp-action="Index">Reset Filters</a>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-outline-dark btn-sm"
+                       asp-action="ExportSales"
+                       asp-route-dateFrom="@Model.DateFrom?.ToString("yyyy-MM-dd")"
+                       asp-route-dateTo="@Model.DateTo?.ToString("yyyy-MM-dd")"
+                       asp-route-paymentMethod="@Model.PaymentMethod"
+                       asp-route-orderStatus="@Model.OrderStatus"
+                       asp-route-search="@Model.Search">Export CSV</a>
+                    <a class="btn btn-outline-dark btn-sm" asp-action="Index">Reset Filters</a>
+                </div>
             </div>
 
             <form asp-action="Index" method="get" class="report-filter">

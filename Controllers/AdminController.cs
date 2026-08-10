@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using RestaurantApp.Models;
@@ -65,6 +66,15 @@ public class AdminController : Controller
             Customer = BuildCustomerSummaries([user], customerOrders).Single(),
             Orders = customerOrders
         });
+    }
+
+    public IActionResult ExportSales(DateTime? dateFrom, DateTime? dateTo, string? paymentMethod, string? orderStatus, string? search)
+    {
+        var orders = ApplyOrderFilters(_orderService.GetOrders(), dateFrom, dateTo, paymentMethod, orderStatus, search);
+        var csv = BuildSalesCsv(orders);
+        var fileName = $"leakhnas-sales-{DateTime.UtcNow:yyyyMMdd-HHmm}.csv";
+
+        return File(Encoding.UTF8.GetBytes(csv), "text/csv", fileName);
     }
 
     [HttpPost]
@@ -248,5 +258,40 @@ public class AdminController : Controller
             .OrderByDescending(customer => customer.LastOrderAt)
             .ThenBy(customer => customer.FullName)
             .ToList();
+    }
+
+    private static string BuildSalesCsv(IReadOnlyList<Order> orders)
+    {
+        var csv = new StringBuilder();
+        csv.AppendLine("Receipt,Date,Customer,Email,Phone,Payment Method,Payment Status,Order Status,Order Type,Subtotal,HST,Total,Items,Notes");
+
+        foreach (var order in orders)
+        {
+            var items = string.Join("; ", order.Lines.Select(line => $"{line.Quantity} x {line.MenuItem.Name}"));
+            csv.AppendLine(string.Join(
+                ",",
+                Csv(order.Id),
+                Csv(order.CreatedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm")),
+                Csv(order.CustomerName),
+                Csv(order.Email),
+                Csv(order.Phone),
+                Csv(order.PaymentMethod),
+                Csv(order.PaymentStatus),
+                Csv(order.Status),
+                Csv(order.OrderType),
+                Csv(order.Subtotal.ToString("0.00")),
+                Csv(order.Tax.ToString("0.00")),
+                Csv(order.Total.ToString("0.00")),
+                Csv(items),
+                Csv(order.Notes)));
+        }
+
+        return csv.ToString();
+    }
+
+    private static string Csv(string? value)
+    {
+        var escaped = (value ?? string.Empty).Replace("\"", "\"\"");
+        return $"\"{escaped}\"";
     }
 }
