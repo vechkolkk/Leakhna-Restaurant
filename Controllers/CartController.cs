@@ -31,6 +31,12 @@ public class CartController : Controller
             return NotFound();
         }
 
+        if (!menuItem.IsAvailable)
+        {
+            TempData["CartMessage"] = $"{menuItem.Name} is currently unavailable.";
+            return RedirectToAction("Index", "Menu", new { availableOnly = false });
+        }
+
         var cart = GetCart();
         var existing = cart.GetValueOrDefault(id) ?? new CartSessionItem();
         existing.Quantity += quantity;
@@ -57,7 +63,7 @@ public class CartController : Controller
         {
             cart.Remove(id);
         }
-        else if (_menuService.GetMenuItem(id) is not null)
+        else if (_menuService.GetMenuItem(id) is { IsAvailable: true })
         {
             cart[id] = new CartSessionItem
             {
@@ -99,7 +105,7 @@ public class CartController : Controller
     {
         var lines = GetCart()
             .Select(entry => new { MenuItem = _menuService.GetMenuItem(entry.Key), Quantity = entry.Value })
-            .Where(entry => entry.MenuItem is not null && entry.Quantity.Quantity > 0)
+            .Where(entry => entry.MenuItem is { IsAvailable: true } && entry.Quantity.Quantity > 0)
             .Select(entry => new CartLine
             {
                 MenuItem = entry.MenuItem!,

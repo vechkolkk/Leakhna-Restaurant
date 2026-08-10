@@ -421,6 +421,18 @@ a:hover {
   max-width: 110px;
 }
 
+.unavailable-panel {
+  align-items: center;
+  background: #fff8ec;
+  border: 1px dashed #ddc6a6;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
 .cart-items {
   display: grid;
   gap: 1rem;

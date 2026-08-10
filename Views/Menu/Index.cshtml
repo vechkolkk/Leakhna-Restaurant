@@ -12,6 +12,11 @@
 </section>
 
 <section class="container py-4">
+    @if (TempData["CartMessage"] is string cartMessage)
+    {
+        <div class="alert alert-info">@cartMessage</div>
+    }
+
     <form asp-action="Index" method="get" class="menu-filter">
         <div>
             <label class="form-label" asp-for="Search">Search</label>
