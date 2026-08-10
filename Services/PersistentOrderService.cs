@@ -26,6 +26,8 @@ public class PersistentOrderService : IOrderService
             PaymentSummary = BuildPaymentSummary(checkout),
             OrderType = checkout.OrderType,
             DeliveryAddress = checkout.DeliveryAddress,
+            FulfillmentTiming = checkout.FulfillmentTiming,
+            RequestedFulfillmentAt = checkout.RequestedFulfillmentAt,
             IsGuestCheckout = checkout.IsGuestCheckout,
             Status = checkout.PaymentMethod == "E-Transfer" ? "Awaiting Verification" : "Paid",
             Notes = checkout.Notes,

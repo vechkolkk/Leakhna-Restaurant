@@ -68,7 +68,13 @@ public class CheckoutController : Controller
             ModelState.AddModelError(nameof(checkout.OrderType), "Select pickup or delivery.");
         }
 
+        if (!FulfillmentTimings.Contains(checkout.FulfillmentTiming))
+        {
+            ModelState.AddModelError(nameof(checkout.FulfillmentTiming), "Select a fulfillment time.");
+        }
+
         ValidatePaymentDetails(checkout);
+        ValidateFulfillmentTiming(checkout);
 
         if (checkout.OrderType == "Delivery" && string.IsNullOrWhiteSpace(checkout.DeliveryAddress))
         {
@@ -188,6 +194,12 @@ public class CheckoutController : Controller
         "Delivery"
     ];
 
+    private static IReadOnlyList<string> FulfillmentTimings { get; } =
+    [
+        "ASAP",
+        "Scheduled"
+    ];
+
     private UserAccount? GetCurrentUser()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -271,6 +283,26 @@ public class CheckoutController : Controller
             {
                 ModelState.AddModelError(nameof(checkout.ETransferReference), "Reference number is required.");
             }
+        }
+    }
+
+    private void ValidateFulfillmentTiming(CheckoutViewModel checkout)
+    {
+        if (checkout.FulfillmentTiming == "ASAP")
+        {
+            checkout.RequestedFulfillmentAt = null;
+            return;
+        }
+
+        if (!checkout.RequestedFulfillmentAt.HasValue)
+        {
+            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose a pickup or delivery time.");
+            return;
+        }
+
+        if (checkout.RequestedFulfillmentAt.Value < DateTime.Now.AddMinutes(15))
+        {
+            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose a time at least 15 minutes from now.");
         }
     }
 

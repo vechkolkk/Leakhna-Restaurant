@@ -24,6 +24,10 @@ public class Order
 
     public string? DeliveryAddress { get; set; }
 
+    public string FulfillmentTiming { get; set; } = "ASAP";
+
+    public DateTime? RequestedFulfillmentAt { get; set; }
+
     public bool IsGuestCheckout { get; set; }
 
     public string Status { get; set; } = "Paid";

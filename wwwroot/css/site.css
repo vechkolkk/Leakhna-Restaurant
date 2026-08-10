@@ -514,7 +514,8 @@ a:hover {
 }
 
 .payment-panel[hidden],
-.delivery-panel[hidden] {
+.delivery-panel[hidden],
+.scheduled-panel[hidden] {
   display: none;
 }
 

@@ -287,7 +287,7 @@ public class AdminController : Controller
     private static string BuildSalesCsv(IReadOnlyList<Order> orders)
     {
         var csv = new StringBuilder();
-        csv.AppendLine("Receipt,Date,Customer,Email,Phone,Payment Method,Payment Status,Order Status,Order Type,Subtotal,HST,Total,Items,Notes");
+        csv.AppendLine("Receipt,Date,Customer,Email,Phone,Payment Method,Payment Status,Order Status,Order Type,Fulfillment Time,Subtotal,HST,Total,Items,Notes");
 
         foreach (var order in orders)
         {
@@ -303,6 +303,7 @@ public class AdminController : Controller
                 Csv(order.PaymentStatus),
                 Csv(order.Status),
                 Csv(order.OrderType),
+                Csv(GetFulfillmentLabel(order)),
                 Csv(order.Subtotal.ToString("0.00")),
                 Csv(order.Tax.ToString("0.00")),
                 Csv(order.Total.ToString("0.00")),
@@ -317,5 +318,12 @@ public class AdminController : Controller
     {
         var escaped = (value ?? string.Empty).Replace("\"", "\"\"");
         return $"\"{escaped}\"";
+    }
+
+    private static string GetFulfillmentLabel(Order order)
+    {
+        return order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue
+            ? order.RequestedFulfillmentAt.Value.ToString("yyyy-MM-dd HH:mm")
+            : "ASAP";
     }
 }

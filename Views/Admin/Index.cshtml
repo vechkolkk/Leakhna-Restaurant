@@ -192,6 +192,7 @@
                                 <th>Customer</th>
                                 <th>Payment</th>
                                 <th>Status</th>
+                                <th>Requested</th>
                                 <th>Update</th>
                                 <th></th>
                                 <th>Type</th>
@@ -208,6 +209,7 @@
                                     <td>@order.CustomerName</td>
                                     <td>@order.PaymentMethod</td>
                                     <td>@order.Status</td>
+                                    <td>@(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</td>
                                     <td>
                                         <form asp-action="UpdateOrderStatus" method="post" class="status-form">
                                             <input type="hidden" name="orderId" value="@order.Id" />

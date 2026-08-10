@@ -71,6 +71,7 @@
                                 <th>Receipt</th>
                                 <th>Date</th>
                                 <th>Status</th>
+                                <th>Requested</th>
                                 <th>Payment</th>
                                 <th>Type</th>
                                 <th class="text-end">Total</th>
@@ -84,6 +85,7 @@
                                     <td>@order.Id</td>
                                     <td>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</td>
                                     <td>@order.Status</td>
+                                    <td>@(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</td>
                                     <td>@order.PaymentMethod</td>
                                     <td>@order.OrderType</td>
                                     <td class="text-end">@order.Total.ToString("C")</td>

@@ -47,6 +47,13 @@ public class CheckoutViewModel
     [Display(Name = "Delivery address")]
     public string? DeliveryAddress { get; set; }
 
+    [Required]
+    [Display(Name = "Fulfillment time")]
+    public string FulfillmentTiming { get; set; } = "ASAP";
+
+    [Display(Name = "Requested time")]
+    public DateTime? RequestedFulfillmentAt { get; set; }
+
     [Display(Name = "Checkout as guest")]
     public bool IsGuestCheckout { get; set; } = true;
 

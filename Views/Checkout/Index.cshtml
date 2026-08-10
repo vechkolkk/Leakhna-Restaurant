@@ -107,6 +107,19 @@
                         <input asp-for="DeliveryAddress" class="form-control" />
                         <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
                     </div>
+                    <div class="col-md-6">
+                        <label asp-for="FulfillmentTiming" class="form-label"></label>
+                        <select asp-for="FulfillmentTiming" class="form-select" data-fulfillment-timing>
+                            <option value="ASAP">As soon as possible</option>
+                            <option value="Scheduled">Schedule for later</option>
+                        </select>
+                        <span asp-validation-for="FulfillmentTiming" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 scheduled-panel">
+                        <label asp-for="RequestedFulfillmentAt" class="form-label"></label>
+                        <input asp-for="RequestedFulfillmentAt" class="form-control" type="datetime-local" />
+                        <span asp-validation-for="RequestedFulfillmentAt" class="text-danger"></span>
+                    </div>
                     <div class="col-12">
                         <div class="form-check">
                             <input asp-for="IsGuestCheckout" class="form-check-input" />
@@ -163,8 +176,10 @@
     <script>
         const paymentSelect = document.querySelector('[name="PaymentMethod"]');
         const orderTypeSelect = document.querySelector('[data-order-type]');
+        const fulfillmentTimingSelect = document.querySelector('[data-fulfillment-timing]');
         const panels = document.querySelectorAll('[data-payment-panel]');
         const deliveryPanel = document.querySelector('.delivery-panel');
+        const scheduledPanel = document.querySelector('.scheduled-panel');
 
         function syncCheckoutPanels() {
             const method = paymentSelect.value;
@@ -183,10 +198,12 @@
             }
 
             deliveryPanel.hidden = orderTypeSelect.value !== 'Delivery';
+            scheduledPanel.hidden = fulfillmentTimingSelect.value !== 'Scheduled';
         }
 
         paymentSelect.addEventListener('change', syncCheckoutPanels);
         orderTypeSelect.addEventListener('change', syncCheckoutPanels);
+        fulfillmentTimingSelect.addEventListener('change', syncCheckoutPanels);
         syncCheckoutPanels();
     </script>
 }
