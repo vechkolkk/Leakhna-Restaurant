@@ -27,6 +27,10 @@
             <strong>@Model.ReceiptCount</strong>
         </div>
         <div class="metric">
+            <span>Customers</span>
+            <strong>@Model.CustomerCount</strong>
+        </div>
+        <div class="metric">
             <span>Total sales</span>
             <strong>@Model.TotalSales.ToString("C")</strong>
         </div>
@@ -199,5 +203,49 @@
                 </div>
             }
         </div>
+    </div>
+
+    <div class="mt-4">
+        <h2 class="section-heading">Customers</h2>
+        @if (Model.Customers.Count == 0)
+        {
+            <div class="empty-state compact">
+                <h3>No registered customers yet</h3>
+                <p>New account registrations will appear here with receipt history and contact details.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle customer-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Default address</th>
+                            <th class="text-end">Orders</th>
+                            <th>Last order</th>
+                            <th class="text-end">Lifetime spend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var customer in Model.Customers)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@customer.FullName</strong>
+                                    <span>@customer.Email</span>
+                                </td>
+                                <td>@(customer.Phone ?? "Not set")</td>
+                                <td>@(customer.DefaultAddress ?? "Not set")</td>
+                                <td class="text-end">@customer.OrderCount</td>
+                                <td>@(customer.LastOrderAt?.LocalDateTime.ToString("MMM d, yyyy") ?? "No orders")</td>
+                                <td class="text-end">@customer.TotalSpent.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </section>

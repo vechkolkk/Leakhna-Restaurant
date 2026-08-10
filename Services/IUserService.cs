@@ -12,5 +12,7 @@ public interface IUserService
 
     UserAccount? GetByEmail(string email);
 
+    IReadOnlyList<UserAccount> GetUsers();
+
     UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile);
 }

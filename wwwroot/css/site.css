@@ -626,6 +626,12 @@ a:hover {
   margin-left: .35rem;
 }
 
+.customer-table td:first-child span {
+  color: var(--muted);
+  display: block;
+  font-size: .9rem;
+}
+
 .receipt-meta dt {
   color: var(--muted);
   font-family: Arial, Helvetica, sans-serif;
@@ -641,7 +647,7 @@ a:hover {
 .metric-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 .metric {

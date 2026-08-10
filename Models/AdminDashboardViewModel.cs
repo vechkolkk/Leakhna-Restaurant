@@ -6,6 +6,8 @@ public class AdminDashboardViewModel
 
     public IReadOnlyList<Order> Orders { get; set; } = [];
 
+    public IReadOnlyList<CustomerSummaryItem> Customers { get; set; } = [];
+
     public DateTime? DateFrom { get; set; }
 
     public DateTime? DateTo { get; set; }
@@ -33,4 +35,6 @@ public class AdminDashboardViewModel
     public decimal AverageOrderValue => ReceiptCount == 0 ? 0 : TotalSales / ReceiptCount;
 
     public int ReceiptCount => Orders.Count;
+
+    public int CustomerCount => Customers.Count;
 }

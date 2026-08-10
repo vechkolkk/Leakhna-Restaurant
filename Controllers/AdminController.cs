@@ -10,11 +10,13 @@ public class AdminController : Controller
 {
     private readonly IMenuService _menuService;
     private readonly IOrderService _orderService;
+    private readonly IUserService _userService;
 
-    public AdminController(IMenuService menuService, IOrderService orderService)
+    public AdminController(IMenuService menuService, IOrderService orderService, IUserService userService)
     {
         _menuService = menuService;
         _orderService = orderService;
+        _userService = userService;
     }
 
     public IActionResult Index(DateTime? dateFrom, DateTime? dateTo, string? paymentMethod, string? orderStatus, string? search)
@@ -26,6 +28,7 @@ public class AdminController : Controller
         {
             MenuItems = _menuService.GetMenuItems(),
             Orders = filteredOrders,
+            Customers = BuildCustomerSummaries(_userService.GetUsers(), allOrders),
             DateFrom = dateFrom,
             DateTo = dateTo,
             PaymentMethod = paymentMethod,
@@ -194,6 +197,35 @@ public class AdminController : Controller
                 Total = group.Sum(order => order.Total)
             })
             .OrderByDescending(item => item.Total)
+            .ToList();
+    }
+
+    private static IReadOnlyList<CustomerSummaryItem> BuildCustomerSummaries(
+        IReadOnlyList<UserAccount> users,
+        IReadOnlyList<Order> orders)
+    {
+        return users
+            .Where(user => user.Role == UserRoles.Customer)
+            .Select(user =>
+            {
+                var customerOrders = orders
+                    .Where(order => order.CustomerId == user.Id || order.Email?.Equals(user.Email, StringComparison.OrdinalIgnoreCase) == true)
+                    .ToList();
+
+                return new CustomerSummaryItem
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    DefaultAddress = user.DefaultAddress,
+                    OrderCount = customerOrders.Count,
+                    TotalSpent = customerOrders.Sum(order => order.Total),
+                    LastOrderAt = customerOrders.Count == 0 ? null : customerOrders.Max(order => order.CreatedAt)
+                };
+            })
+            .OrderByDescending(customer => customer.LastOrderAt)
+            .ThenBy(customer => customer.FullName)
             .ToList();
     }
 }

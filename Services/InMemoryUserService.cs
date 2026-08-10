@@ -70,6 +70,14 @@ public class InMemoryUserService : IUserService
         }
     }
 
+    public IReadOnlyList<UserAccount> GetUsers()
+    {
+        lock (_lock)
+        {
+            return _users.ToList();
+        }
+    }
+
     public UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile)
     {
         lock (_lock)

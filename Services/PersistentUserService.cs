@@ -56,6 +56,11 @@ public class PersistentUserService : IUserService
         return _dataStore.GetSnapshot().Users.FirstOrDefault(user => user.Email.Equals(email.Trim(), StringComparison.OrdinalIgnoreCase));
     }
 
+    public IReadOnlyList<UserAccount> GetUsers()
+    {
+        return _dataStore.GetSnapshot().Users;
+    }
+
     public UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile)
     {
         return _dataStore.UpdateUserProfile(
