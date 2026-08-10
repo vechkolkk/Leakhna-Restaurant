@@ -27,6 +27,10 @@
             <strong>@Model.ReceiptCount</strong>
         </div>
         <div class="metric">
+            <span>Active orders</span>
+            <strong>@Model.ActiveOrderCount</strong>
+        </div>
+        <div class="metric">
             <span>Customers</span>
             <strong>@Model.CustomerCount</strong>
         </div>
@@ -42,6 +46,42 @@
             <span>Average order</span>
             <strong>@Model.AverageOrderValue.ToString("C")</strong>
         </div>
+    </div>
+
+    <div class="mt-4">
+        <h2 class="section-heading">Active order queue</h2>
+        @if (Model.ActiveOrderQueue.Count == 0)
+        {
+            <div class="empty-state compact">
+                <h3>No active orders</h3>
+                <p>New paid, preparing, pickup, and delivery orders will appear here for quick service tracking.</p>
+            </div>
+        }
+        else
+        {
+            <div class="queue-grid">
+                @foreach (var group in Model.ActiveOrderQueue)
+                {
+                    <section class="summary-panel queue-column">
+                        <h3>@group.Status</h3>
+                        @foreach (var order in group.Orders)
+                        {
+                            <article class="queue-card">
+                                <div>
+                                    <strong>@order.Id</strong>
+                                    <span>@order.CustomerName</span>
+                                </div>
+                                <div>
+                                    <span>@order.OrderType</span>
+                                    <strong>@(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</strong>
+                                </div>
+                                <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
+                            </article>
+                        }
+                    </section>
+                }
+            </div>
+        }
     </div>
 
     <div class="row g-4 mt-1">

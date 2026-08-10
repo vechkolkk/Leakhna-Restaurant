@@ -29,6 +29,7 @@ public class AdminController : Controller
         {
             MenuItems = _menuService.GetMenuItems(),
             Orders = filteredOrders,
+            ActiveOrderQueue = BuildActiveOrderQueue(allOrders),
             Customers = BuildCustomerSummaries(_userService.GetUsers(), allOrders),
             DateFrom = dateFrom,
             DateTo = dateTo,
@@ -281,6 +282,23 @@ public class AdminController : Controller
             .OrderByDescending(item => item.QuantitySold)
             .ThenByDescending(item => item.Revenue)
             .Take(5)
+            .ToList();
+    }
+
+    private static IReadOnlyList<OrderQueueGroup> BuildActiveOrderQueue(IReadOnlyList<Order> orders)
+    {
+        var activeStatuses = new[] { "Awaiting Verification", "Paid", "Preparing", "Ready for Pickup", "Out for Delivery" };
+
+        return orders
+            .Where(order => activeStatuses.Contains(order.Status))
+            .OrderBy(order => order.RequestedFulfillmentAt ?? order.CreatedAt.LocalDateTime)
+            .GroupBy(order => order.Status)
+            .OrderBy(group => Array.IndexOf(activeStatuses, group.Key))
+            .Select(group => new OrderQueueGroup
+            {
+                Status = group.Key,
+                Orders = group.ToList()
+            })
             .ToList();
     }
 
