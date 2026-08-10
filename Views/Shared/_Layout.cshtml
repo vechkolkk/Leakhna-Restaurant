@@ -32,6 +32,26 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index">Cart</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Profile">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="nav-form">
+                                    <button class="nav-link nav-button" type="submit">Sign Out</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Sign Up</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link nav-admin" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
                         </li>

@@ -1,0 +1,59 @@
+@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<section class="page-band">
+    <div class="container py-4">
+        <p class="eyebrow">Account</p>
+        <h1 class="page-title">Create account</h1>
+    </div>
+</section>
+
+<section class="container py-4">
+    <form asp-action="Register" method="post" class="checkout-form">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Phone" class="form-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DefaultAddress" class="form-label"></label>
+                <input asp-for="DefaultAddress" class="form-control" />
+                <span asp-validation-for="DefaultAddress" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <button class="btn btn-primary" type="submit">Create Account</button>
+            <a class="btn btn-outline-dark" asp-action="Login">Sign In Instead</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

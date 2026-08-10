@@ -21,7 +21,7 @@
             </div>
             <div>
                 <dt>Payment</dt>
-                <dd>@Model.PaymentMethod</dd>
+                <dd>@Model.PaymentMethod - @Model.PaymentStatus</dd>
             </div>
             <div>
                 <dt>Date</dt>
@@ -31,7 +31,16 @@
                 <dt>Checkout</dt>
                 <dd>@(Model.IsGuestCheckout ? "Guest" : "Registered")</dd>
             </div>
+            <div>
+                <dt>Order type</dt>
+                <dd>@Model.OrderType</dd>
+            </div>
         </dl>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PaymentSummary))
+        {
+            <p class="receipt-note">@Model.PaymentSummary</p>
+        }
 
         <table class="table">
             <thead>
@@ -53,6 +62,14 @@
             </tbody>
             <tfoot>
                 <tr>
+                    <th colspan="2">Subtotal</th>
+                    <th class="text-end">@Model.Subtotal.ToString("C")</th>
+                </tr>
+                <tr>
+                    <th colspan="2">HST (@Model.TaxRate.ToString("P0"))</th>
+                    <th class="text-end">@Model.Tax.ToString("C")</th>
+                </tr>
+                <tr>
                     <th colspan="2">Paid total</th>
                     <th class="text-end">@Model.Total.ToString("C")</th>
                 </tr>
@@ -61,7 +78,10 @@
 
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-primary" asp-controller="Menu" asp-action="Index">Order Again</a>
-            <a class="btn btn-outline-dark" asp-controller="Admin" asp-action="Index">View Admin Dashboard</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn btn-outline-dark" asp-controller="Account" asp-action="Profile">View Profile</a>
+            }
         </div>
     </div>
 </section>

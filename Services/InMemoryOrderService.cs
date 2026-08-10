@@ -7,7 +7,7 @@ public class InMemoryOrderService : IOrderService
     private readonly List<Order> _orders = [];
     private readonly object _lock = new();
 
-    public Order CreateOrder(CheckoutViewModel checkout, IReadOnlyList<CartLine> lines)
+    public Order CreateOrder(CheckoutViewModel checkout, CartViewModel cart, UserAccount? customer)
     {
         var order = new Order
         {
@@ -16,10 +16,20 @@ public class InMemoryOrderService : IOrderService
             CustomerName = checkout.CustomerName,
             Email = checkout.Email,
             Phone = checkout.Phone,
+            CustomerId = customer?.Id,
             PaymentMethod = checkout.PaymentMethod,
+            PaymentStatus = checkout.PaymentMethod == "E-Transfer" ? "Pending Verification" : "Paid",
+            PaymentSummary = BuildPaymentSummary(checkout),
+            OrderType = checkout.OrderType,
+            DeliveryAddress = checkout.DeliveryAddress,
             IsGuestCheckout = checkout.IsGuestCheckout,
+            Status = checkout.PaymentMethod == "E-Transfer" ? "Awaiting Verification" : "Paid",
             Notes = checkout.Notes,
-            Lines = lines.Select(line => new CartLine
+            Subtotal = cart.Subtotal,
+            TaxRate = cart.TaxRate,
+            Tax = cart.Tax,
+            Total = cart.Total,
+            Lines = cart.Lines.Select(line => new CartLine
             {
                 MenuItem = line.MenuItem,
                 Quantity = line.Quantity
@@ -42,11 +52,34 @@ public class InMemoryOrderService : IOrderService
         }
     }
 
+    public IReadOnlyList<Order> GetOrdersForCustomer(string customerId, string email)
+    {
+        lock (_lock)
+        {
+            return _orders
+                .Where(order => order.CustomerId == customerId || order.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+        }
+    }
+
     public Order? GetOrder(string id)
     {
         lock (_lock)
         {
             return _orders.FirstOrDefault(order => order.Id == id);
         }
+    }
+
+    private static string BuildPaymentSummary(CheckoutViewModel checkout)
+    {
+        return checkout.PaymentMethod switch
+        {
+            "Credit Card" or "Debit Card" => string.IsNullOrWhiteSpace(checkout.CardNumber)
+                ? "Card payment details captured for demo"
+                : $"Card ending in {checkout.CardNumber[^Math.Min(4, checkout.CardNumber.Length)..]}",
+            "PayPal" => $"PayPal account {checkout.PayPalEmail}",
+            "E-Transfer" => $"Reference {checkout.ETransferReference} from {checkout.ETransferSenderName}",
+            _ => checkout.PaymentMethod
+        };
     }
 }

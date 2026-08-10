@@ -8,5 +8,7 @@ public class AdminDashboardViewModel
 
     public decimal TotalSales => Orders.Sum(order => order.Total);
 
+    public decimal TotalTax => Orders.Sum(order => order.Tax);
+
     public int ReceiptCount => Orders.Count;
 }

@@ -4,7 +4,7 @@ Starter repository for building Leakhna's Restaurant Web Ordering and Management
 
 ## Status
 
-Initial ASP.NET Core MVC application scaffold with menu browsing, cart, checkout receipts, and an administrator dashboard.
+Initial ASP.NET Core MVC application scaffold with menu browsing, cart, customer accounts, tax-aware checkout receipts, customer profiles, and a protected administrator dashboard.
 
 ## Project Context
 
@@ -16,3 +16,22 @@ Initial ASP.NET Core MVC application scaffold with menu browsing, cart, checkout
 ```powershell
 dotnet run
 ```
+
+## Demo Accounts
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Customer | customer@leakhnas.local | Customer123! |
+| Administrator | admin@leakhnas.local | Admin123! |
+
+## Current Features
+
+- Sign up, sign in, sign out, and customer profile pages
+- Role-protected administrator dashboard
+- Menu browsing with ingredient and calorie details
+- Session-based shopping cart
+- Checkout with pickup or delivery
+- 13% HST calculation
+- Credit card, debit card, PayPal, and e-transfer demo fields
+- Receipt confirmation with payment status and masked payment summary
+- Registered customer receipt history

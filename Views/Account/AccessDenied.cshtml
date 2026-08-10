@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<section class="container py-5">
+    <div class="empty-state">
+        <p class="eyebrow">Access denied</p>
+        <h1>Admin access required</h1>
+        <p>Sign in with an administrator account to view the restaurant dashboard.</p>
+        <a class="btn btn-primary" asp-action="Login" asp-route-returnUrl="/Admin">Sign In</a>
+    </div>
+</section>

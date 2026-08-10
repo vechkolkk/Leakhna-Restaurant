@@ -148,6 +148,15 @@ a:hover {
   color: #fff;
 }
 
+.nav-form {
+  margin: 0;
+}
+
+.nav-button {
+  background: transparent;
+  border: 0;
+}
+
 .hero-band {
   border-bottom: 1px solid var(--line);
   overflow: hidden;
@@ -384,6 +393,18 @@ a:hover {
   padding: 1.25rem;
 }
 
+.payment-panel {
+  background: #fff8ec;
+  border: 1px dashed #ddc6a6;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.payment-panel[hidden],
+.delivery-panel[hidden] {
+  display: none;
+}
+
 .empty-state {
   padding: 3rem 1.25rem;
   text-align: center;
@@ -432,6 +453,11 @@ a:hover {
   font-size: 1.2rem;
 }
 
+.grand-total {
+  border-top: 2px solid var(--charcoal);
+  font-size: 1.35rem;
+}
+
 .receipt {
   margin: 0 auto;
   max-width: 920px;
@@ -447,8 +473,16 @@ a:hover {
 .receipt-meta {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   margin: 1.5rem 0;
+}
+
+.receipt-note {
+  background: #fff8ec;
+  border: 1px solid #ead7bc;
+  border-radius: 8px;
+  color: var(--muted);
+  padding: .8rem 1rem;
 }
 
 .receipt-meta dt {
@@ -466,7 +500,7 @@ a:hover {
 .metric-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .metric {

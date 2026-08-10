@@ -1,0 +1,140 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantApp.Models;
+using RestaurantApp.Services;
+
+namespace RestaurantApp.Controllers;
+
+public class AccountController : Controller
+{
+    private readonly IOrderService _orderService;
+    private readonly IUserService _userService;
+
+    public AccountController(IUserService userService, IOrderService orderService)
+    {
+        _userService = userService;
+        _orderService = orderService;
+    }
+
+    public IActionResult Login(string? returnUrl = null)
+    {
+        return View(new LoginViewModel { ReturnUrl = returnUrl });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel login)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(login);
+        }
+
+        var user = _userService.Authenticate(login.Email, login.Password);
+
+        if (user is null)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid email or password.");
+            return View(login);
+        }
+
+        await SignInUser(user, login.RememberMe);
+        return RedirectToLocal(login.ReturnUrl);
+    }
+
+    public IActionResult Register()
+    {
+        return View(new RegisterViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel registration)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(registration);
+        }
+
+        try
+        {
+            var user = _userService.Register(registration);
+            await SignInUser(user, isPersistent: false);
+            return RedirectToAction(nameof(Profile));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(nameof(registration.Email), ex.Message);
+            return View(registration);
+        }
+    }
+
+    [Authorize]
+    public IActionResult Profile()
+    {
+        var user = GetCurrentUser();
+
+        if (user is null)
+        {
+            return Challenge();
+        }
+
+        return View(new ProfileViewModel
+        {
+            User = user,
+            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
+        });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Index", "Home");
+    }
+
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+
+    private UserAccount? GetCurrentUser()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return string.IsNullOrWhiteSpace(userId) ? null : _userService.GetById(userId);
+    }
+
+    private async Task SignInUser(UserAccount user, bool isPersistent)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.FullName),
+            new(ClaimTypes.Email, user.Email),
+            new(ClaimTypes.Role, user.Role)
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal,
+            new AuthenticationProperties { IsPersistent = isPersistent });
+    }
+
+    private IActionResult RedirectToLocal(string? returnUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
+}

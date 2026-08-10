@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,14 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, ".aspnet-data-protection-keys")))
     .SetApplicationName("LeakhnasRestaurant");
@@ -19,6 +28,7 @@ builder.Services.Configure<RestaurantApp.Options.MongoDbOptions>(
     builder.Configuration.GetSection(RestaurantApp.Options.MongoDbOptions.SectionName));
 builder.Services.AddSingleton<RestaurantApp.Services.IMenuService, RestaurantApp.Services.InMemoryMenuService>();
 builder.Services.AddSingleton<RestaurantApp.Services.IOrderService, RestaurantApp.Services.InMemoryOrderService>();
+builder.Services.AddSingleton<RestaurantApp.Services.IUserService, RestaurantApp.Services.InMemoryUserService>();
 
 var app = builder.Build();
 
@@ -35,6 +45,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

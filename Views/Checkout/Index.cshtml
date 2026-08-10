@@ -4,6 +4,7 @@
     ViewData["Title"] = "Checkout";
     var cart = ViewBag.Cart as CartViewModel ?? new CartViewModel();
     var paymentMethods = ViewBag.PaymentMethods as IReadOnlyList<string> ?? [];
+    var orderTypes = ViewBag.OrderTypes as IReadOnlyList<string> ?? [];
 }
 
 <section class="page-band">
@@ -45,6 +46,67 @@
                         </select>
                         <span asp-validation-for="PaymentMethod" class="text-danger"></span>
                     </div>
+                    <div class="col-md-6">
+                        <label asp-for="OrderType" class="form-label"></label>
+                        <select asp-for="OrderType" class="form-select" data-order-type>
+                            @foreach (var orderType in orderTypes)
+                            {
+                                <option value="@orderType">@orderType</option>
+                            }
+                        </select>
+                        <span asp-validation-for="OrderType" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 payment-panel" data-payment-panel="card">
+                        <h2 class="section-heading">Card details</h2>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="CardholderName" class="form-label"></label>
+                                <input asp-for="CardholderName" class="form-control" autocomplete="cc-name" />
+                                <span asp-validation-for="CardholderName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CardNumber" class="form-label"></label>
+                                <input asp-for="CardNumber" class="form-control" autocomplete="cc-number" inputmode="numeric" />
+                                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CardExpiry" class="form-label"></label>
+                                <input asp-for="CardExpiry" class="form-control" autocomplete="cc-exp" placeholder="MM/YY" />
+                                <span asp-validation-for="CardExpiry" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="CardCvv" class="form-label"></label>
+                                <input asp-for="CardCvv" class="form-control" autocomplete="cc-csc" inputmode="numeric" />
+                                <span asp-validation-for="CardCvv" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 payment-panel" data-payment-panel="paypal">
+                        <h2 class="section-heading">PayPal details</h2>
+                        <label asp-for="PayPalEmail" class="form-label"></label>
+                        <input asp-for="PayPalEmail" class="form-control" />
+                        <span asp-validation-for="PayPalEmail" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 payment-panel" data-payment-panel="etransfer">
+                        <h2 class="section-heading">E-transfer verification</h2>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="ETransferSenderName" class="form-label"></label>
+                                <input asp-for="ETransferSenderName" class="form-control" />
+                                <span asp-validation-for="ETransferSenderName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ETransferReference" class="form-label"></label>
+                                <input asp-for="ETransferReference" class="form-control" />
+                                <span asp-validation-for="ETransferReference" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 delivery-panel">
+                        <label asp-for="DeliveryAddress" class="form-label"></label>
+                        <input asp-for="DeliveryAddress" class="form-control" />
+                        <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                    </div>
                     <div class="col-12">
                         <div class="form-check">
                             <input asp-for="IsGuestCheckout" class="form-check-input" />
@@ -74,6 +136,14 @@
                     </div>
                 }
                 <div class="summary-total">
+                    <span>Subtotal</span>
+                    <strong>@cart.Subtotal.ToString("C")</strong>
+                </div>
+                <div class="summary-total">
+                    <span>HST (@cart.TaxRate.ToString("P0"))</span>
+                    <strong>@cart.Tax.ToString("C")</strong>
+                </div>
+                <div class="summary-total grand-total">
                     <span>Total</span>
                     <strong>@cart.Total.ToString("C")</strong>
                 </div>
@@ -84,4 +154,33 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const paymentSelect = document.querySelector('[name="PaymentMethod"]');
+        const orderTypeSelect = document.querySelector('[data-order-type]');
+        const panels = document.querySelectorAll('[data-payment-panel]');
+        const deliveryPanel = document.querySelector('.delivery-panel');
+
+        function syncCheckoutPanels() {
+            const method = paymentSelect.value;
+            panels.forEach(panel => panel.hidden = true);
+
+            if (method === 'Credit Card' || method === 'Debit Card') {
+                document.querySelector('[data-payment-panel="card"]').hidden = false;
+            }
+
+            if (method === 'PayPal') {
+                document.querySelector('[data-payment-panel="paypal"]').hidden = false;
+            }
+
+            if (method === 'E-Transfer') {
+                document.querySelector('[data-payment-panel="etransfer"]').hidden = false;
+            }
+
+            deliveryPanel.hidden = orderTypeSelect.value !== 'Delivery';
+        }
+
+        paymentSelect.addEventListener('change', syncCheckoutPanels);
+        orderTypeSelect.addEventListener('change', syncCheckoutPanels);
+        syncCheckoutPanels();
+    </script>
 }
