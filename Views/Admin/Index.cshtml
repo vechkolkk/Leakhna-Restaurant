@@ -66,6 +66,7 @@
                         <h3>@group.Status</h3>
                         @foreach (var order in group.Orders)
                         {
+                            var nextStatus = OrderStatusOptions.GetNextOperationalStatus(order.Status, order.OrderType);
                             <article class="queue-card">
                                 <div>
                                     <strong>@order.Id</strong>
@@ -75,7 +76,17 @@
                                     <span>@order.OrderType</span>
                                     <strong>@(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</strong>
                                 </div>
-                                <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
+                                <div class="queue-actions">
+                                    @if (!string.IsNullOrWhiteSpace(nextStatus))
+                                    {
+                                        <form asp-action="UpdateOrderStatus" method="post">
+                                            <input type="hidden" name="orderId" value="@order.Id" />
+                                            <input type="hidden" name="status" value="@nextStatus" />
+                                            <button class="btn btn-primary btn-sm" type="submit">@nextStatus</button>
+                                        </form>
+                                    }
+                                    <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
+                                </div>
                             </article>
                         }
                     </section>

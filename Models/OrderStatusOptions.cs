@@ -43,4 +43,17 @@ public static class OrderStatusOptions
 
         return currentIndex >= 0 && stepIndex >= 0 && stepIndex <= currentIndex;
     }
+
+    public static string? GetNextOperationalStatus(string currentStatus, string orderType)
+    {
+        return currentStatus switch
+        {
+            "Awaiting Verification" => "Preparing",
+            "Paid" => "Preparing",
+            "Preparing" => orderType == "Delivery" ? "Out for Delivery" : "Ready for Pickup",
+            "Ready for Pickup" => "Completed",
+            "Out for Delivery" => "Completed",
+            _ => null
+        };
+    }
 }

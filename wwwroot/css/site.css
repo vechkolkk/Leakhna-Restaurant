@@ -774,6 +774,18 @@ a:hover {
   font-size: .9rem;
 }
 
+.queue-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: flex-end;
+}
+
+.queue-actions form {
+  margin: 0;
+}
+
 .receipt-meta dt {
   color: var(--muted);
   font-family: Arial, Helvetica, sans-serif;
