@@ -159,6 +159,16 @@
                     <span>Subtotal</span>
                     <strong>@cart.Subtotal.ToString("C")</strong>
                 </div>
+                @if (cart.Discount > 0)
+                {
+                    <div class="summary-total discount-line">
+                        <span>
+                            Promo @cart.PromoCode
+                            <small>@cart.Promotion?.Description</small>
+                        </span>
+                        <strong>-@cart.Discount.ToString("C")</strong>
+                    </div>
+                }
                 <div class="summary-total">
                     <span>HST (@cart.TaxRate.ToString("P0"))</span>
                     <strong>@cart.Tax.ToString("C")</strong>

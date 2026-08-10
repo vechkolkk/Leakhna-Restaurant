@@ -8,11 +8,14 @@ namespace RestaurantApp.Controllers;
 public class CartController : Controller
 {
     public const string CartSessionKey = "RestaurantCart";
+    private const string PromoSessionKey = "RestaurantPromoCode";
     private readonly IMenuService _menuService;
+    private readonly IPromotionService _promotionService;
 
-    public CartController(IMenuService menuService)
+    public CartController(IMenuService menuService, IPromotionService promotionService)
     {
         _menuService = menuService;
+        _promotionService = promotionService;
     }
 
     public IActionResult Index()
@@ -98,6 +101,51 @@ public class CartController : Controller
     public IActionResult Clear()
     {
         SaveCart([]);
+        HttpContext.Session.Remove(PromoSessionKey);
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ApplyPromo(string? promoCode)
+    {
+        var cart = BuildCartViewModel();
+
+        if (cart.ItemCount == 0)
+        {
+            TempData["CartMessage"] = "Add at least one menu item before applying a promo.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var promotion = _promotionService.GetPromotion(promoCode);
+
+        if (promotion is null)
+        {
+            HttpContext.Session.Remove(PromoSessionKey);
+            TempData["CartMessage"] = "That promo code was not found.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var discount = promotion.CalculateDiscount(cart.Subtotal);
+
+        if (discount <= 0)
+        {
+            HttpContext.Session.Remove(PromoSessionKey);
+            TempData["CartMessage"] = $"{promotion.Code} requires a subtotal of at least {promotion.MinimumSubtotal.ToString("C")}.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        HttpContext.Session.SetString(PromoSessionKey, promotion.Code);
+        TempData["CartMessage"] = $"{promotion.Code} applied: {promotion.Description}.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RemovePromo()
+    {
+        HttpContext.Session.Remove(PromoSessionKey);
+        TempData["CartMessage"] = "Promo code removed.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -114,12 +162,21 @@ public class CartController : Controller
             })
             .ToList();
 
-        return new CartViewModel { Lines = lines };
+        var promotion = _promotionService.GetPromotion(HttpContext.Session.GetString(PromoSessionKey));
+        var viewModel = new CartViewModel { Lines = lines };
+
+        if (promotion is not null && promotion.CalculateDiscount(viewModel.Subtotal) > 0)
+        {
+            viewModel.Promotion = promotion;
+        }
+
+        return viewModel;
     }
 
     internal void ClearCart()
     {
         SaveCart([]);
+        HttpContext.Session.Remove(PromoSessionKey);
     }
 
     private Dictionary<string, CartSessionItem> GetCart()

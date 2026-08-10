@@ -28,6 +28,7 @@ builder.Services.Configure<RestaurantApp.Options.PersistenceOptions>(
     builder.Configuration.GetSection(RestaurantApp.Options.PersistenceOptions.SectionName));
 builder.Services.Configure<RestaurantApp.Options.MongoDbOptions>(
     builder.Configuration.GetSection(RestaurantApp.Options.MongoDbOptions.SectionName));
+builder.Services.AddSingleton<RestaurantApp.Services.IPromotionService, RestaurantApp.Services.StaticPromotionService>();
 
 var persistenceProvider = builder.Configuration
     .GetSection(RestaurantApp.Options.PersistenceOptions.SectionName)

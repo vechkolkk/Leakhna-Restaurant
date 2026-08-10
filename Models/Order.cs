@@ -38,6 +38,12 @@ public class Order
 
     public decimal Subtotal { get; set; }
 
+    public string? DiscountCode { get; set; }
+
+    public string? DiscountLabel { get; set; }
+
+    public decimal Discount { get; set; }
+
     public decimal TaxRate { get; set; } = CartViewModel.HstRate;
 
     public decimal Tax { get; set; }

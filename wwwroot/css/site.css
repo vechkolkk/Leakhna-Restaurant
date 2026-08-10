@@ -594,6 +594,23 @@ a:hover {
   margin-top: .15rem;
 }
 
+.discount-line strong,
+.discount-line th,
+.discount-line span {
+  color: #24704f;
+}
+
+.promo-form {
+  border-top: 1px solid #eee5d8;
+  padding-top: 1rem;
+}
+
+.promo-form > div {
+  display: grid;
+  gap: .5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .menu-admin-row {
   align-items: flex-start;
 }

@@ -128,6 +128,19 @@
                     <th colspan="2">Subtotal</th>
                     <th class="text-end">@Model.Subtotal.ToString("C")</th>
                 </tr>
+                @if (Model.Discount > 0)
+                {
+                    <tr class="discount-line">
+                        <th colspan="2">
+                            Promo @Model.DiscountCode
+                            @if (!string.IsNullOrWhiteSpace(Model.DiscountLabel))
+                            {
+                                <span>@Model.DiscountLabel</span>
+                            }
+                        </th>
+                        <th class="text-end">-@Model.Discount.ToString("C")</th>
+                    </tr>
+                }
                 <tr>
                     <th colspan="2">HST (@Model.TaxRate.ToString("P0"))</th>
                     <th class="text-end">@Model.Tax.ToString("C")</th>

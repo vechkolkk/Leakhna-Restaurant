@@ -12,12 +12,18 @@ public class CheckoutController : Controller
 
     private readonly IMenuService _menuService;
     private readonly IOrderService _orderService;
+    private readonly IPromotionService _promotionService;
     private readonly IUserService _userService;
 
-    public CheckoutController(IMenuService menuService, IOrderService orderService, IUserService userService)
+    public CheckoutController(
+        IMenuService menuService,
+        IOrderService orderService,
+        IPromotionService promotionService,
+        IUserService userService)
     {
         _menuService = menuService;
         _orderService = orderService;
+        _promotionService = promotionService;
         _userService = userService;
     }
 
@@ -314,7 +320,7 @@ public class CheckoutController : Controller
 
     private CartViewModel BuildCartViewModel()
     {
-        var cartController = new CartController(_menuService)
+        var cartController = new CartController(_menuService, _promotionService)
         {
             ControllerContext = ControllerContext
         };
@@ -324,7 +330,7 @@ public class CheckoutController : Controller
 
     private void ClearCart()
     {
-        var cartController = new CartController(_menuService)
+        var cartController = new CartController(_menuService, _promotionService)
         {
             ControllerContext = ControllerContext
         };

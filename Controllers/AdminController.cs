@@ -322,7 +322,7 @@ public class AdminController : Controller
     private static string BuildSalesCsv(IReadOnlyList<Order> orders)
     {
         var csv = new StringBuilder();
-        csv.AppendLine("Receipt,Date,Customer,Email,Phone,Payment Method,Payment Status,Order Status,Order Type,Fulfillment Time,Subtotal,HST,Total,Items,Notes");
+        csv.AppendLine("Receipt,Date,Customer,Email,Phone,Payment Method,Payment Status,Order Status,Order Type,Fulfillment Time,Subtotal,Discount Code,Discount,HST,Total,Items,Notes");
 
         foreach (var order in orders)
         {
@@ -340,6 +340,8 @@ public class AdminController : Controller
                 Csv(order.OrderType),
                 Csv(GetFulfillmentLabel(order)),
                 Csv(order.Subtotal.ToString("0.00")),
+                Csv(order.DiscountCode),
+                Csv(order.Discount.ToString("0.00")),
                 Csv(order.Tax.ToString("0.00")),
                 Csv(order.Total.ToString("0.00")),
                 Csv(items),
