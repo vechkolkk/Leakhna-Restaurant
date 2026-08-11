@@ -32,26 +32,6 @@
                 }
             </select>
         </div>
-        <div>
-            <label class="form-label" asp-for="DietaryTag">Dietary</label>
-            <select class="form-select" asp-for="DietaryTag">
-                <option value="">Any diet</option>
-                @foreach (var tag in Model.DietaryTags)
-                {
-                    <option value="@tag">@tag</option>
-                }
-            </select>
-        </div>
-        <div>
-            <label class="form-label" asp-for="AvoidAllergen">Avoid</label>
-            <select class="form-select" asp-for="AvoidAllergen">
-                <option value="">No allergen filter</option>
-                @foreach (var allergen in Model.Allergens)
-                {
-                    <option value="@allergen">@allergen</option>
-                }
-            </select>
-        </div>
         <label class="filter-check">
             <input class="form-check-input" asp-for="AvailableOnly" />
             <span>Available only</span>
@@ -65,6 +45,31 @@
         }
         <button class="btn btn-primary" type="submit">Apply</button>
         <a class="btn btn-outline-dark" asp-action="Index">Reset</a>
+        <details class="advanced-filter-panel">
+            <summary>More filters</summary>
+            <div class="advanced-filter-grid">
+                <div>
+                    <label class="form-label" asp-for="DietaryTag">Dietary</label>
+                    <select class="form-select" asp-for="DietaryTag">
+                        <option value="">Any diet</option>
+                        @foreach (var tag in Model.DietaryTags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label" asp-for="AvoidAllergen">Avoid</label>
+                    <select class="form-select" asp-for="AvoidAllergen">
+                        <option value="">No allergen filter</option>
+                        @foreach (var allergen in Model.Allergens)
+                        {
+                            <option value="@allergen">@allergen</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </details>
     </form>
 
     @if (Model.Items.Count == 0)
@@ -79,7 +84,6 @@
         <div class="row g-4">
             @foreach (var item in Model.Items)
             {
-                var reviewSummary = Model.ReviewSummaries.GetValueOrDefault(item.Id);
                 var isFavorite = Model.FavoriteMenuItemIds.Contains(item.Id);
                 <div class="col-md-6 col-xl-4">
                     <article class="menu-card">
@@ -94,21 +98,14 @@
                             <p>@item.Description</p>
                             <div class="dish-meta">
                                 <span>@item.EstimatedCalories calories</span>
-                                <span>@item.EstimatedPrepMinutes min</span>
-                                <span>@item.Ingredients.Count ingredients</span>
-                                <span>@(reviewSummary?.DisplayText ?? "No reviews yet")</span>
                                 <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>
                             </div>
-                            @if (item.DietaryTags.Count > 0 || item.Allergens.Count > 0)
+                            @if (item.DietaryTags.Count > 0)
                             {
                                 <div class="tag-row">
                                     @foreach (var tag in item.DietaryTags.Take(2))
                                     {
                                         <span>@tag</span>
-                                    }
-                                    @foreach (var allergen in item.Allergens.Take(2))
-                                    {
-                                        <span class="allergen">Contains @allergen</span>
                                     }
                                 </div>
                             }

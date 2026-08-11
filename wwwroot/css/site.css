@@ -344,7 +344,7 @@ a:hover {
   box-shadow: 0 16px 42px rgba(65, 43, 26, .08);
   display: grid;
   gap: .85rem;
-  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(150px, .65fr)) auto auto auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(180px, .65fr) auto auto auto auto;
   margin-bottom: 1.25rem;
   padding: 1rem;
 }
@@ -362,6 +362,24 @@ a:hover {
   display: inline-flex;
   gap: .45rem;
   min-height: 44px;
+}
+
+.advanced-filter-panel {
+  grid-column: 1 / -1;
+}
+
+.advanced-filter-panel summary,
+.admin-section summary {
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+}
+
+.advanced-filter-grid {
+  display: grid;
+  gap: .85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: .85rem;
 }
 
 .dish-meta,
@@ -439,7 +457,7 @@ a:hover {
 .review-moderation-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .review-card {
@@ -472,6 +490,18 @@ a:hover {
 
 .review-form {
   align-self: start;
+}
+
+.admin-section {
+  background: rgba(255, 255, 255, .72);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.admin-section[open] summary {
+  margin-bottom: 1rem;
 }
 
 .favorite-list {
@@ -673,6 +703,12 @@ a:hover {
   font-family: Arial, Helvetica, sans-serif;
   font-size: .82rem;
   text-transform: uppercase;
+}
+
+.table td span {
+  color: var(--muted);
+  display: block;
+  font-size: .9rem;
 }
 
 .summary-panel h2 {
@@ -973,10 +1009,11 @@ a:hover {
 .metric-grid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
-.metric {
+.metric,
+.mini-metric {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, .1), transparent),
     var(--charcoal);
@@ -987,14 +1024,31 @@ a:hover {
 }
 
 .metric span,
+.mini-metric span,
 .list-row span {
   display: block;
   opacity: .72;
 }
 
+.mini-metric-grid {
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mini-metric {
+  padding: .9rem;
+}
+
 .metric strong {
   display: block;
   font-size: 2rem;
+}
+
+.mini-metric strong {
+  color: #fff;
+  display: block;
+  font-size: 1.35rem;
 }
 
 .report-filter {
@@ -1081,8 +1135,10 @@ a:hover {
   }
 
   .menu-preview-grid,
+  .advanced-filter-grid,
   .menu-filter,
   .metric-grid,
+  .mini-metric-grid,
   .queue-card,
   .review-moderation-grid,
   .review-section,

@@ -19,14 +19,6 @@
 
     <div class="metric-grid">
         <div class="metric">
-            <span>Menu items</span>
-            <strong>@Model.MenuItems.Count</strong>
-        </div>
-        <div class="metric">
-            <span>Limited items</span>
-            <strong>@Model.MenuItems.Count(item => item.IsLimited)</strong>
-        </div>
-        <div class="metric">
             <span>Receipts</span>
             <strong>@Model.ReceiptCount</strong>
         </div>
@@ -37,10 +29,6 @@
         <div class="metric">
             <span>Customers</span>
             <strong>@Model.CustomerCount</strong>
-        </div>
-        <div class="metric">
-            <span>Reviews</span>
-            <strong>@Model.ReviewCount</strong>
         </div>
         <div class="metric">
             <span>Total sales</span>
@@ -54,40 +42,6 @@
             <span>Average order</span>
             <strong>@Model.AverageOrderValue.ToString("C")</strong>
         </div>
-    </div>
-
-    <div class="mt-4">
-        <h2 class="section-heading">Review moderation</h2>
-        @if (Model.Reviews.Count == 0)
-        {
-            <div class="empty-state compact">
-                <h3>No reviews yet</h3>
-                <p>Verified customer reviews will appear here for moderation.</p>
-            </div>
-        }
-        else
-        {
-            <div class="review-moderation-grid">
-                @foreach (var review in Model.Reviews.Take(6))
-                {
-                    var reviewedItem = Model.MenuItems.FirstOrDefault(item => item.Id == review.MenuItemId);
-                    <article class="review-card">
-                        <div>
-                            <strong>@(reviewedItem?.Name ?? review.MenuItemId)</strong>
-                            <span>@review.Rating / 5</span>
-                        </div>
-                        <p>@review.Comment</p>
-                        <div>
-                            <span>@review.ReviewerName - @review.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</span>
-                            <form asp-action="DeleteReview" method="post">
-                                <input name="id" type="hidden" value="@review.Id" />
-                                <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
-                            </form>
-                        </div>
-                    </article>
-                }
-            </div>
-        }
     </div>
 
     <div class="mt-4">
@@ -143,13 +97,27 @@
                 <h2 class="section-heading mb-0">Menu management</h2>
                 <a class="btn btn-primary" asp-action="CreateMenuItem">Add Item</a>
             </div>
+            <div class="mini-metric-grid mb-3">
+                <div class="mini-metric">
+                    <span>Items</span>
+                    <strong>@Model.MenuItems.Count</strong>
+                </div>
+                <div class="mini-metric">
+                    <span>Limited</span>
+                    <strong>@Model.MenuItems.Count(item => item.IsLimited)</strong>
+                </div>
+                <div class="mini-metric">
+                    <span>Reviews</span>
+                    <strong>@Model.ReviewCount</strong>
+                </div>
+            </div>
             <div class="list-panel">
                 @foreach (var item in Model.MenuItems)
                 {
                     <div class="list-row menu-admin-row">
                         <div>
                             <strong>@item.Name</strong>
-                            <span>@item.Category - @item.EstimatedCalories calories - @item.EstimatedPrepMinutes min - @item.AvailabilityStatus</span>
+                            <span>@item.Category - @item.AvailabilityStatus</span>
                             @if (item.IsLimited)
                             {
                                 <span class="admin-availability-warning">Running limited</span>
@@ -218,78 +186,120 @@
                 <button class="btn btn-primary" type="submit">Apply</button>
             </form>
 
-            <div class="report-grid">
-                <div class="summary-panel">
-                    <h3>By payment type</h3>
-                    @if (Model.PaymentBreakdown.Count == 0)
-                    {
-                        <p class="text-muted">No payment data for this filter.</p>
-                    }
-                    @foreach (var item in Model.PaymentBreakdown)
-                    {
-                        <div class="summary-line">
-                            <span>@item.Label <small>@item.Count receipt(s)</small></span>
-                            <strong>@item.Total.ToString("C")</strong>
-                        </div>
-                    }
+            <details class="admin-section" open>
+                <summary>Sales breakdowns</summary>
+                <div class="report-grid">
+                    <div class="summary-panel">
+                        <h3>By payment type</h3>
+                        @if (Model.PaymentBreakdown.Count == 0)
+                        {
+                            <p class="text-muted">No payment data for this filter.</p>
+                        }
+                        @foreach (var item in Model.PaymentBreakdown)
+                        {
+                            <div class="summary-line">
+                                <span>@item.Label <small>@item.Count receipt(s)</small></span>
+                                <strong>@item.Total.ToString("C")</strong>
+                            </div>
+                        }
+                    </div>
+                    <div class="summary-panel">
+                        <h3>By order status</h3>
+                        @if (Model.StatusBreakdown.Count == 0)
+                        {
+                            <p class="text-muted">No status data for this filter.</p>
+                        }
+                        @foreach (var item in Model.StatusBreakdown)
+                        {
+                            <div class="summary-line">
+                                <span>@item.Label <small>@item.Count receipt(s)</small></span>
+                                <strong>@item.Total.ToString("C")</strong>
+                            </div>
+                        }
+                    </div>
                 </div>
-                <div class="summary-panel">
-                    <h3>By order status</h3>
-                    @if (Model.StatusBreakdown.Count == 0)
-                    {
-                        <p class="text-muted">No status data for this filter.</p>
-                    }
-                    @foreach (var item in Model.StatusBreakdown)
-                    {
-                        <div class="summary-line">
-                            <span>@item.Label <small>@item.Count receipt(s)</small></span>
-                            <strong>@item.Total.ToString("C")</strong>
-                        </div>
-                    }
-                </div>
-            </div>
+            </details>
 
-            <div class="summary-panel mt-3">
-                <h3>Top selling dishes</h3>
-                @if (Model.TopDishes.Count == 0)
+            <details class="admin-section">
+                <summary>Menu performance</summary>
+                <div class="report-grid">
+                    <div class="summary-panel">
+                        <h3>Top selling dishes</h3>
+                        @if (Model.TopDishes.Count == 0)
+                        {
+                            <p class="text-muted">No dish sales for this filter.</p>
+                        }
+                        @foreach (var dish in Model.TopDishes)
+                        {
+                            <div class="top-dish-row">
+                                <div>
+                                    <strong>@dish.Name</strong>
+                                    <span>@dish.Category</span>
+                                </div>
+                                <div>
+                                    <strong>@dish.QuantitySold sold</strong>
+                                    <span>@dish.Revenue.ToString("C")</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="summary-panel">
+                        <h3>Daily sales trend</h3>
+                        @if (Model.DailySales.Count == 0)
+                        {
+                            <p class="text-muted">No daily sales for this filter.</p>
+                        }
+                        @foreach (var day in Model.DailySales)
+                        {
+                            <div class="daily-sales-row">
+                                <div>
+                                    <strong>@day.Date.ToString("MMM d, yyyy")</strong>
+                                    <span>@day.ReceiptCount receipt(s)</span>
+                                </div>
+                                <div>
+                                    <strong>@day.Sales.ToString("C")</strong>
+                                    <span>@day.Tax.ToString("C") HST</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </details>
+
+            <details class="admin-section">
+                <summary>Review moderation</summary>
+                @if (Model.Reviews.Count == 0)
                 {
-                    <p class="text-muted">No dish sales for this filter.</p>
-                }
-                @foreach (var dish in Model.TopDishes)
-                {
-                    <div class="top-dish-row">
-                        <div>
-                            <strong>@dish.Name</strong>
-                            <span>@dish.Category</span>
-                        </div>
-                        <div>
-                            <strong>@dish.QuantitySold sold</strong>
-                            <span>@dish.Revenue.ToString("C")</span>
-                        </div>
+                    <div class="empty-state compact">
+                        <h3>No reviews yet</h3>
+                        <p>Verified customer reviews will appear here for moderation.</p>
                     </div>
                 }
-            </div>
-
-            <div class="summary-panel mt-3">
-                <h3>Daily sales trend</h3>
-                @if (Model.DailySales.Count == 0)
+                else
                 {
-                    <p class="text-muted">No daily sales for this filter.</p>
-                }
-                @foreach (var day in Model.DailySales)
-                {
-                    <div class="daily-sales-row">
-                        <div>
-                            <strong>@day.Date.ToString("MMM d, yyyy")</strong>
-                            <span>@day.ReceiptCount receipt(s)</span>
-                        </div>
-                        <div>
-                            <strong>@day.Sales.ToString("C")</strong>
-                            <span>@day.Tax.ToString("C") HST</span>
-                        </div>
+                    <div class="review-moderation-grid">
+                        @foreach (var review in Model.Reviews.Take(6))
+                        {
+                            var reviewedItem = Model.MenuItems.FirstOrDefault(item => item.Id == review.MenuItemId);
+                            <article class="review-card">
+                                <div>
+                                    <strong>@(reviewedItem?.Name ?? review.MenuItemId)</strong>
+                                    <span>@review.Rating / 5</span>
+                                </div>
+                                <p>@review.Comment</p>
+                                <div>
+                                    <span>@review.ReviewerName - @review.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</span>
+                                    <form asp-action="DeleteReview" method="post">
+                                        <input name="id" type="hidden" value="@review.Id" />
+                                        <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </article>
+                        }
                     </div>
                 }
-            </div>
+            </details>
 
             <h2 class="section-heading mt-4">Receipts</h2>
             @if (Model.Orders.Count == 0)
@@ -306,16 +316,11 @@
                         <thead>
                             <tr>
                                 <th>Receipt</th>
-                                <th>Date</th>
                                 <th>Customer</th>
-                                <th>Payment</th>
-                                <th>Status</th>
-                                <th>Requested</th>
-                                <th>Ready est.</th>
+                                <th>Payment / status</th>
+                                <th>Fulfillment</th>
                                 <th>Update</th>
                                 <th></th>
-                                <th>Type</th>
-                                <th class="text-end">Tax</th>
                                 <th class="text-end">Total</th>
                             </tr>
                         </thead>
@@ -323,13 +328,20 @@
                             @foreach (var order in Model.Orders)
                             {
                                 <tr>
-                                    <td>@order.Id</td>
-                                    <td>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</td>
+                                    <td>
+                                        <strong>@order.Id</strong>
+                                        <span>@order.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</span>
+                                    </td>
                                     <td>@order.CustomerName</td>
-                                    <td>@order.PaymentMethod</td>
-                                    <td>@order.Status</td>
-                                    <td>@(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</td>
-                                    <td>@(order.EstimatedReadyAt?.ToString("MMM d, h:mm tt") ?? $"{order.EstimatedPrepMinutes} min")</td>
+                                    <td>
+                                        <strong>@order.PaymentMethod</strong>
+                                        <span>@order.Status</span>
+                                    </td>
+                                    <td>
+                                        <strong>@order.OrderType</strong>
+                                        <span>Requested: @(order.FulfillmentTiming == "Scheduled" && order.RequestedFulfillmentAt.HasValue ? order.RequestedFulfillmentAt.Value.ToString("MMM d, h:mm tt") : "ASAP")</span>
+                                        <span>Ready: @(order.EstimatedReadyAt?.ToString("MMM d, h:mm tt") ?? $"{order.EstimatedPrepMinutes} min")</span>
+                                    </td>
                                     <td>
                                         <form asp-action="UpdateOrderStatus" method="post" class="status-form">
                                             <input type="hidden" name="orderId" value="@order.Id" />
@@ -345,8 +357,6 @@
                                     <td>
                                         <a class="btn btn-outline-dark btn-sm" asp-controller="Checkout" asp-action="Confirmation" asp-route-id="@order.Id">View</a>
                                     </td>
-                                    <td>@order.OrderType</td>
-                                    <td class="text-end">@order.Tax.ToString("C")</td>
                                     <td class="text-end">@order.Total.ToString("C")</td>
                                 </tr>
                             }
