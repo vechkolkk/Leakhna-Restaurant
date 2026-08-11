@@ -28,7 +28,14 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         {
             EnsureDataFile();
             var json = File.ReadAllText(_dataPath);
-            return JsonSerializer.Deserialize<RestaurantDataSnapshot>(json, JsonOptions) ?? CreateSeedSnapshot();
+            var snapshot = JsonSerializer.Deserialize<RestaurantDataSnapshot>(json, JsonOptions) ?? CreateSeedSnapshot();
+
+            if (ApplyMissingMenuMetadata(snapshot))
+            {
+                SaveSnapshot(snapshot);
+            }
+
+            return snapshot;
         }
     }
 
@@ -136,26 +143,21 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
     {
         return new RestaurantDataSnapshot
         {
-            MenuItems = SeedData.MenuItems.Select(CloneMenuItem).ToList(),
+            MenuItems = SeedData.MenuItems.Select(SeedData.CloneMenuItem).ToList(),
             Users = SeedData.Users,
             Orders = []
         };
     }
 
-    private static MenuItem CloneMenuItem(MenuItem item)
+    private static bool ApplyMissingMenuMetadata(RestaurantDataSnapshot snapshot)
     {
-        return new MenuItem
+        var changed = false;
+
+        foreach (var item in snapshot.MenuItems)
         {
-            Id = item.Id,
-            Name = item.Name,
-            Category = item.Category,
-            Description = item.Description,
-            Ingredients = item.Ingredients.ToList(),
-            EstimatedCalories = item.EstimatedCalories,
-            Price = item.Price,
-            IsAvailable = item.IsAvailable,
-            AvailabilityLevel = item.AvailabilityStatus,
-            AccentClass = item.AccentClass
-        };
+            changed |= SeedData.ApplyMissingMenuMetadata(item);
+        }
+
+        return changed;
     }
 }

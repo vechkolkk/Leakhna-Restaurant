@@ -30,6 +30,28 @@
                 }
             </ul>
 
+            @if (Model.DietaryTags.Count > 0)
+            {
+                <h2 class="section-heading mt-4">Dietary notes</h2>
+                <div class="tag-row detail-tags">
+                    @foreach (var tag in Model.DietaryTags)
+                    {
+                        <span>@tag</span>
+                    }
+                </div>
+            }
+
+            @if (Model.Allergens.Count > 0)
+            {
+                <h2 class="section-heading mt-4">Allergen warnings</h2>
+                <div class="tag-row detail-tags">
+                    @foreach (var allergen in Model.Allergens)
+                    {
+                        <span class="allergen">Contains @allergen</span>
+                    }
+                </div>
+            }
+
             @if (Model.IsOrderable)
             {
                 <form asp-controller="Cart" asp-action="Add" method="post" class="order-strip mt-4">

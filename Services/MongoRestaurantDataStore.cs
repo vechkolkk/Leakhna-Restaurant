@@ -31,7 +31,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
 
     public RestaurantDataSnapshot GetSnapshot()
     {
-        return new RestaurantDataSnapshot
+        var snapshot = new RestaurantDataSnapshot
         {
             MenuItems = _menuItems.Find(Builders<MenuItem>.Filter.Empty).ToList(),
             Users = _users.Find(Builders<UserAccount>.Filter.Empty).ToList(),
@@ -40,6 +40,13 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
                 .SortByDescending(order => order.CreatedAt)
                 .ToList()
         };
+
+        foreach (var item in snapshot.MenuItems)
+        {
+            SeedData.ApplyMissingMenuMetadata(item);
+        }
+
+        return snapshot;
     }
 
     public void SaveSnapshot(RestaurantDataSnapshot snapshot)
@@ -111,7 +118,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
     {
         if (_menuItems.CountDocuments(Builders<MenuItem>.Filter.Empty) == 0)
         {
-            _menuItems.InsertMany(SeedData.MenuItems.Select(CloneMenuItem));
+            _menuItems.InsertMany(SeedData.MenuItems.Select(SeedData.CloneMenuItem));
         }
 
         if (_users.CountDocuments(Builders<UserAccount>.Filter.Empty) == 0)
@@ -137,20 +144,4 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
             Builders<MenuItem>.IndexKeys.Ascending(item => item.Category)));
     }
 
-    private static MenuItem CloneMenuItem(MenuItem item)
-    {
-        return new MenuItem
-        {
-            Id = item.Id,
-            Name = item.Name,
-            Category = item.Category,
-            Description = item.Description,
-            Ingredients = item.Ingredients.ToList(),
-            EstimatedCalories = item.EstimatedCalories,
-            Price = item.Price,
-            IsAvailable = item.IsAvailable,
-            AvailabilityLevel = item.AvailabilityStatus,
-            AccentClass = item.AccentClass
-        };
-    }
 }

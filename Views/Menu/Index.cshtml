@@ -32,6 +32,26 @@
                 }
             </select>
         </div>
+        <div>
+            <label class="form-label" asp-for="DietaryTag">Dietary</label>
+            <select class="form-select" asp-for="DietaryTag">
+                <option value="">Any diet</option>
+                @foreach (var tag in Model.DietaryTags)
+                {
+                    <option value="@tag">@tag</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label" asp-for="AvoidAllergen">Avoid</label>
+            <select class="form-select" asp-for="AvoidAllergen">
+                <option value="">No allergen filter</option>
+                @foreach (var allergen in Model.Allergens)
+                {
+                    <option value="@allergen">@allergen</option>
+                }
+            </select>
+        </div>
         <label class="filter-check">
             <input class="form-check-input" asp-for="AvailableOnly" />
             <span>Available only</span>
@@ -68,6 +88,19 @@
                                 <span>@item.Ingredients.Count ingredients</span>
                                 <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>
                             </div>
+                            @if (item.DietaryTags.Count > 0 || item.Allergens.Count > 0)
+                            {
+                                <div class="tag-row">
+                                    @foreach (var tag in item.DietaryTags.Take(2))
+                                    {
+                                        <span>@tag</span>
+                                    }
+                                    @foreach (var allergen in item.Allergens.Take(2))
+                                    {
+                                        <span class="allergen">Contains @allergen</span>
+                                    }
+                                </div>
+                            }
                             <div class="d-flex gap-2 mt-3">
                                 <a class="btn btn-outline-dark flex-fill" asp-action="Details" asp-route-id="@item.Id">Details</a>
                                 <form asp-controller="Cart" asp-action="Add" method="post" class="flex-fill">

@@ -10,6 +10,10 @@ public interface IMenuService
 
     IReadOnlyList<string> GetCategories();
 
+    IReadOnlyList<string> GetDietaryTags();
+
+    IReadOnlyList<string> GetAllergens();
+
     MenuItem AddMenuItem(MenuItem item);
 
     bool UpdateMenuItem(MenuItem item);

@@ -43,6 +43,16 @@
                 <input asp-for="IngredientsText" class="form-control" placeholder="Chicken, Lemongrass, Jasmine rice" />
                 <span asp-validation-for="IngredientsText" class="text-danger"></span>
             </div>
+            <div class="col-md-6">
+                <label asp-for="DietaryTagsText" class="form-label"></label>
+                <input asp-for="DietaryTagsText" class="form-control" placeholder="Vegetarian, Gluten friendly, High protein" />
+                <span asp-validation-for="DietaryTagsText" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="AllergensText" class="form-label"></label>
+                <input asp-for="AllergensText" class="form-control" placeholder="Peanuts, Milk, Sesame" />
+                <span asp-validation-for="AllergensText" class="text-danger"></span>
+            </div>
             <div class="col-md-4">
                 <label asp-for="EstimatedCalories" class="form-label"></label>
                 <input asp-for="EstimatedCalories" class="form-control" />

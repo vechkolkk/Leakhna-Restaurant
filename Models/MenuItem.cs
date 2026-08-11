@@ -12,6 +12,10 @@ public class MenuItem
 
     public IReadOnlyList<string> Ingredients { get; set; } = [];
 
+    public IReadOnlyList<string> DietaryTags { get; set; } = [];
+
+    public IReadOnlyList<string> Allergens { get; set; } = [];
+
     public int EstimatedCalories { get; set; }
 
     public decimal Price { get; set; }

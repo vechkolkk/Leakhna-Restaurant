@@ -26,6 +26,24 @@ public class PersistentMenuService : IMenuService
         return GetMenuItems().Select(item => item.Category).Distinct().OrderBy(category => category).ToList();
     }
 
+    public IReadOnlyList<string> GetDietaryTags()
+    {
+        return GetMenuItems()
+            .SelectMany(item => item.DietaryTags)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(tag => tag)
+            .ToList();
+    }
+
+    public IReadOnlyList<string> GetAllergens()
+    {
+        return GetMenuItems()
+            .SelectMany(item => item.Allergens)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(allergen => allergen)
+            .ToList();
+    }
+
     public MenuItem AddMenuItem(MenuItem item)
     {
         var snapshot = _dataStore.GetSnapshot();

@@ -15,6 +15,8 @@ public static class SeedData
             Category = "Mains",
             Description = "Grilled lemongrass chicken over jasmine rice with pickled vegetables and herb sauce.",
             Ingredients = ["Chicken", "Lemongrass", "Jasmine rice", "Carrot", "Cucumber", "Cilantro"],
+            DietaryTags = ["High protein", "Gluten friendly"],
+            Allergens = ["Fish sauce"],
             EstimatedCalories = 640,
             Price = 15.99m,
             AvailabilityLevel = MenuAvailability.Regular,
@@ -27,6 +29,8 @@ public static class SeedData
             Category = "Mains",
             Description = "Tender beef, fresh greens, tomato, onion, and lime pepper dipping sauce.",
             Ingredients = ["Beef", "Romaine", "Tomato", "Red onion", "Lime", "Black pepper"],
+            DietaryTags = ["High protein", "Gluten friendly"],
+            Allergens = ["Soy"],
             EstimatedCalories = 720,
             Price = 18.49m,
             AvailabilityLevel = MenuAvailability.Regular,
@@ -39,6 +43,8 @@ public static class SeedData
             Category = "Mains",
             Description = "Coconut curry with seasonal vegetables, sweet potato, and steamed rice.",
             Ingredients = ["Coconut milk", "Sweet potato", "Bell pepper", "Green beans", "Rice"],
+            DietaryTags = ["Vegetarian", "Gluten friendly"],
+            Allergens = ["Coconut"],
             EstimatedCalories = 590,
             Price = 14.49m,
             AvailabilityLevel = MenuAvailability.Regular,
@@ -51,6 +57,8 @@ public static class SeedData
             Category = "Appetizers",
             Description = "Rice paper rolls filled with crisp vegetables, herbs, noodles, and peanut sauce.",
             Ingredients = ["Rice paper", "Rice noodles", "Lettuce", "Mint", "Carrot", "Peanut sauce"],
+            DietaryTags = ["Vegetarian", "Light"],
+            Allergens = ["Peanuts"],
             EstimatedCalories = 310,
             Price = 8.99m,
             AvailabilityLevel = MenuAvailability.Regular,
@@ -63,6 +71,8 @@ public static class SeedData
             Category = "Desserts",
             Description = "Sweet coconut sticky rice served with ripe mango and toasted sesame.",
             Ingredients = ["Mango", "Sticky rice", "Coconut milk", "Sesame"],
+            DietaryTags = ["Vegetarian"],
+            Allergens = ["Coconut", "Sesame"],
             EstimatedCalories = 430,
             Price = 7.99m,
             AvailabilityLevel = MenuAvailability.Limited,
@@ -75,6 +85,8 @@ public static class SeedData
             Category = "Drinks",
             Description = "Chilled black tea with milk, lightly sweetened and served over ice.",
             Ingredients = ["Black tea", "Milk", "Sugar", "Ice"],
+            DietaryTags = ["Vegetarian"],
+            Allergens = ["Milk"],
             EstimatedCalories = 180,
             Price = 4.99m,
             AvailabilityLevel = MenuAvailability.Regular,
@@ -107,6 +119,51 @@ public static class SeedData
             PasswordSalt = salt,
             PasswordHash = PasswordHasher.HashPassword(password, salt)
         };
+    }
+
+    public static MenuItem CloneMenuItem(MenuItem item)
+    {
+        return new MenuItem
+        {
+            Id = item.Id,
+            Name = item.Name,
+            Category = item.Category,
+            Description = item.Description,
+            Ingredients = item.Ingredients.ToList(),
+            DietaryTags = item.DietaryTags.ToList(),
+            Allergens = item.Allergens.ToList(),
+            EstimatedCalories = item.EstimatedCalories,
+            Price = item.Price,
+            IsAvailable = item.IsAvailable,
+            AvailabilityLevel = item.AvailabilityStatus,
+            AccentClass = item.AccentClass
+        };
+    }
+
+    public static bool ApplyMissingMenuMetadata(MenuItem item)
+    {
+        var seedItem = MenuItems.FirstOrDefault(seed => seed.Id == item.Id);
+
+        if (seedItem is null)
+        {
+            return false;
+        }
+
+        var changed = false;
+
+        if (item.DietaryTags.Count == 0 && seedItem.DietaryTags.Count > 0)
+        {
+            item.DietaryTags = seedItem.DietaryTags.ToList();
+            changed = true;
+        }
+
+        if (item.Allergens.Count == 0 && seedItem.Allergens.Count > 0)
+        {
+            item.Allergens = seedItem.Allergens.ToList();
+            changed = true;
+        }
+
+        return changed;
     }
 }
 

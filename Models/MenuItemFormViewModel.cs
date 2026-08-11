@@ -18,6 +18,12 @@ public class MenuItemFormViewModel
     [Display(Name = "Ingredients")]
     public string IngredientsText { get; set; } = string.Empty;
 
+    [Display(Name = "Dietary tags")]
+    public string DietaryTagsText { get; set; } = string.Empty;
+
+    [Display(Name = "Allergens")]
+    public string AllergensText { get; set; } = string.Empty;
+
     [Range(0, 5000)]
     [Display(Name = "Estimated calories")]
     public int EstimatedCalories { get; set; }
@@ -44,6 +50,8 @@ public class MenuItemFormViewModel
             Category = item.Category,
             Description = item.Description,
             IngredientsText = string.Join(", ", item.Ingredients),
+            DietaryTagsText = string.Join(", ", item.DietaryTags),
+            AllergensText = string.Join(", ", item.Allergens),
             EstimatedCalories = item.EstimatedCalories,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
@@ -60,9 +68,9 @@ public class MenuItemFormViewModel
             Name = Name.Trim(),
             Category = Category.Trim(),
             Description = Description.Trim(),
-            Ingredients = IngredientsText
-                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ToList(),
+            Ingredients = SplitCsv(IngredientsText),
+            DietaryTags = SplitCsv(DietaryTagsText),
+            Allergens = SplitCsv(AllergensText),
             EstimatedCalories = EstimatedCalories,
             Price = Price,
             IsAvailable = IsAvailable,
@@ -85,5 +93,12 @@ public class MenuItemFormViewModel
         }
 
         return slug.Trim('-');
+    }
+
+    private static IReadOnlyList<string> SplitCsv(string value)
+    {
+        return value
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
     }
 }
