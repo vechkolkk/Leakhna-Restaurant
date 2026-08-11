@@ -120,6 +120,12 @@ a:hover {
   width: 42px;
 }
 
+.nav-shell {
+  align-items: center;
+  gap: .75rem;
+  justify-content: flex-end;
+}
+
 .nav-pills-row {
   align-items: center;
   background: #fff;
@@ -145,6 +151,21 @@ a:hover {
 
 .nav-pills-row .nav-admin {
   background: var(--charcoal);
+  color: #fff;
+}
+
+.account-nav {
+  background: rgba(255, 255, 255, .68);
+}
+
+.nav-pills-row .nav-account-primary {
+  background: var(--tomato);
+  color: #fff;
+}
+
+.nav-pills-row .nav-account-primary:hover,
+.nav-pills-row .nav-admin:hover {
+  background: var(--tomato-dark);
   color: #fff;
 }
 
@@ -1106,10 +1127,15 @@ a:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .nav-shell {
+    align-items: stretch;
+    gap: .6rem;
+  }
+
   .nav-pills-row {
     align-items: stretch;
     border-radius: 8px;
-    margin-top: 1rem;
+    margin-top: .75rem;
   }
 
   .nav-pills-row .nav-link {
