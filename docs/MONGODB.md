@@ -33,7 +33,8 @@ Use:
   "DatabaseName": "LeakhnasRestaurant",
   "UsersCollection": "users",
   "MenuItemsCollection": "menuItems",
-  "OrdersCollection": "orders"
+  "OrdersCollection": "orders",
+  "ReviewsCollection": "reviews"
 }
 ```
 
@@ -51,6 +52,6 @@ Then set:
 ## Implemented MongoDB Behavior
 
 - Seeds admin/customer/menu data when collections are empty.
-- Uses MongoDB for users, menu items, orders, and receipts.
-- Adds indexes for user email, order id, customer id, and menu category.
+- Uses MongoDB for users, menu items, orders, receipts, and reviews.
+- Adds indexes for user email, order id, customer id, menu category, and review menu item id.
 - Keeps JSON persistence available for local development without Atlas.

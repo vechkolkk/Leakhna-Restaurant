@@ -66,17 +66,17 @@ public class CheckoutController : Controller
 
         if (!PaymentMethods.Contains(checkout.PaymentMethod))
         {
-            ModelState.AddModelError(nameof(checkout.PaymentMethod), "Select a supported payment method.");
+            ModelState.AddModelError(nameof(checkout.PaymentMethod), "Choose one of the available payment methods.");
         }
 
         if (!OrderTypes.Contains(checkout.OrderType))
         {
-            ModelState.AddModelError(nameof(checkout.OrderType), "Select pickup or delivery.");
+            ModelState.AddModelError(nameof(checkout.OrderType), "Choose pickup or delivery.");
         }
 
         if (!FulfillmentTimings.Contains(checkout.FulfillmentTiming))
         {
-            ModelState.AddModelError(nameof(checkout.FulfillmentTiming), "Select a fulfillment time.");
+            ModelState.AddModelError(nameof(checkout.FulfillmentTiming), "Choose ASAP or schedule the order for later.");
         }
 
         ValidatePaymentDetails(checkout);
@@ -84,7 +84,7 @@ public class CheckoutController : Controller
 
         if (checkout.OrderType == "Delivery" && string.IsNullOrWhiteSpace(checkout.DeliveryAddress))
         {
-            ModelState.AddModelError(nameof(checkout.DeliveryAddress), "Delivery address is required for delivery orders.");
+            ModelState.AddModelError(nameof(checkout.DeliveryAddress), "Enter the delivery address for this order.");
         }
 
         if (!ModelState.IsValid)
@@ -260,40 +260,40 @@ public class CheckoutController : Controller
         {
             if (string.IsNullOrWhiteSpace(checkout.CardholderName))
             {
-                ModelState.AddModelError(nameof(checkout.CardholderName), "Cardholder name is required.");
+                ModelState.AddModelError(nameof(checkout.CardholderName), "Enter the name shown on the card.");
             }
 
             if (string.IsNullOrWhiteSpace(checkout.CardNumber))
             {
-                ModelState.AddModelError(nameof(checkout.CardNumber), "Card number is required.");
+                ModelState.AddModelError(nameof(checkout.CardNumber), "Enter the card number for this demo payment.");
             }
 
             if (string.IsNullOrWhiteSpace(checkout.CardExpiry))
             {
-                ModelState.AddModelError(nameof(checkout.CardExpiry), "Expiry is required.");
+                ModelState.AddModelError(nameof(checkout.CardExpiry), "Enter the card expiry as MM/YY.");
             }
 
             if (string.IsNullOrWhiteSpace(checkout.CardCvv))
             {
-                ModelState.AddModelError(nameof(checkout.CardCvv), "CVV is required.");
+                ModelState.AddModelError(nameof(checkout.CardCvv), "Enter the 3 or 4 digit CVV.");
             }
         }
 
         if (checkout.PaymentMethod == "PayPal" && string.IsNullOrWhiteSpace(checkout.PayPalEmail))
         {
-            ModelState.AddModelError(nameof(checkout.PayPalEmail), "PayPal email is required.");
+            ModelState.AddModelError(nameof(checkout.PayPalEmail), "Enter the PayPal email for this demo payment.");
         }
 
         if (checkout.PaymentMethod == "E-Transfer")
         {
             if (string.IsNullOrWhiteSpace(checkout.ETransferSenderName))
             {
-                ModelState.AddModelError(nameof(checkout.ETransferSenderName), "Sender name is required.");
+                ModelState.AddModelError(nameof(checkout.ETransferSenderName), "Enter the name the e-transfer will be sent from.");
             }
 
             if (string.IsNullOrWhiteSpace(checkout.ETransferReference))
             {
-                ModelState.AddModelError(nameof(checkout.ETransferReference), "Reference number is required.");
+                ModelState.AddModelError(nameof(checkout.ETransferReference), "Enter the e-transfer confirmation or reference number.");
             }
         }
     }
@@ -308,13 +308,13 @@ public class CheckoutController : Controller
 
         if (!checkout.RequestedFulfillmentAt.HasValue)
         {
-            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose a pickup or delivery time.");
+            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose the pickup or delivery time.");
             return;
         }
 
         if (checkout.RequestedFulfillmentAt.Value < DateTime.Now.AddMinutes(15))
         {
-            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose a time at least 15 minutes from now.");
+            ModelState.AddModelError(nameof(checkout.RequestedFulfillmentAt), "Choose a time at least 15 minutes from now so the kitchen can prepare it.");
         }
     }
 

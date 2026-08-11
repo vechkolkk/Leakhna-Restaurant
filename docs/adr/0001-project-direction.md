@@ -18,7 +18,7 @@ The first version of the application should be built around:
 
 - ASP.NET Core MVC for the web application structure.
 - C# and ASP.NET Core for server-side behavior.
-- ASP.NET Identity for registered customer and administrator authentication.
+- ASP.NET Core cookie authentication for registered customer and administrator authentication in the first version.
 - MongoDB Atlas for cloud-hosted persistence.
 - MongoDB collections for menu items, customers, carts, orders, receipts, and reporting data.
 - Bootstrap, CSS, and JavaScript for the customer and administrator interfaces.
@@ -30,13 +30,11 @@ The product scope should prioritize customer ordering, guest checkout, receipt g
 - The repository should be organized around an ASP.NET Core MVC application rather than a static site or single-page app first.
 - Domain models should reflect restaurant concepts such as menu items, categories, carts, orders, payments, receipts, and users.
 - Authentication and authorization need to be designed early because the system has customer, guest, and administrator workflows.
-- Payment support should be abstracted enough to handle multiple methods, including card payments, PayPal, and e-transfer verification.
+- Payment support should be modeled enough to handle multiple demo methods, including card payments, PayPal, and e-transfer records.
 - MongoDB document design should be considered before building reporting features, since receipts and order history are central requirements.
 
 ## Deferred Decisions
 
-- Specific payment provider and payment verification workflow.
 - Deployment platform.
-- Exact MongoDB collection schemas and indexes.
-- Whether the first release supports pickup, delivery, or both.
-- Administrator dashboard report definitions.
+- Whether to replace custom cookie authentication with ASP.NET Identity in a later hardening pass.
+- Specific live payment provider and payment verification workflow.

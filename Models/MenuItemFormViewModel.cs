@@ -6,39 +6,45 @@ public class MenuItemFormViewModel
 {
     public string? Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Enter a dish name.")]
+    [StringLength(80, ErrorMessage = "Dish name must be 80 characters or fewer.")]
     public string Name { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Enter a category.")]
+    [StringLength(40, ErrorMessage = "Category must be 40 characters or fewer.")]
     public string Category { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Enter a short dish description.")]
+    [StringLength(300, ErrorMessage = "Description must be 300 characters or fewer.")]
     public string Description { get; set; } = string.Empty;
 
+    [StringLength(500, ErrorMessage = "Ingredients must be 500 characters or fewer.")]
     [Display(Name = "Ingredients")]
     public string IngredientsText { get; set; } = string.Empty;
 
+    [StringLength(240, ErrorMessage = "Dietary tags must be 240 characters or fewer.")]
     [Display(Name = "Dietary tags")]
     public string DietaryTagsText { get; set; } = string.Empty;
 
+    [StringLength(240, ErrorMessage = "Allergens must be 240 characters or fewer.")]
     [Display(Name = "Allergens")]
     public string AllergensText { get; set; } = string.Empty;
 
-    [Range(0, 5000)]
+    [Range(0, 5000, ErrorMessage = "Calories must be between 0 and 5000.")]
     [Display(Name = "Estimated calories")]
     public int EstimatedCalories { get; set; }
 
-    [Range(1, 180)]
+    [Range(1, 180, ErrorMessage = "Prep time must be between 1 and 180 minutes.")]
     [Display(Name = "Prep minutes")]
     public int EstimatedPrepMinutes { get; set; } = 15;
 
-    [Range(0.01, 1000)]
+    [Range(0.01, 1000, ErrorMessage = "Price must be between $0.01 and $1000.")]
     public decimal Price { get; set; }
 
     [Display(Name = "Available")]
     public bool IsAvailable { get; set; } = true;
 
-    [Required]
+    [Required(ErrorMessage = "Choose an availability level.")]
     [Display(Name = "Availability level")]
     public string AvailabilityLevel { get; set; } = MenuAvailability.Regular;
 

@@ -13,4 +13,6 @@ public class MongoDbOptions
     public string MenuItemsCollection { get; set; } = "menuItems";
 
     public string OrdersCollection { get; set; } = "orders";
+
+    public string ReviewsCollection { get; set; } = "reviews";
 }

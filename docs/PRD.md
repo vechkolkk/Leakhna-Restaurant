@@ -35,11 +35,13 @@ Customers also often lack access to detailed menu information, including ingredi
 - Create and manage an account.
 - Browse the restaurant menu.
 - View ingredients and estimated calories for each item.
+- View prep estimates, dietary tags, and allergen warnings.
 - Add items to a cart.
 - Place online orders.
 - Pay using multiple payment methods.
 - View order and receipt history.
 - Reorder previous purchases.
+- Save favorite dishes and review purchased dishes.
 
 ### Guest Customer
 
@@ -53,9 +55,11 @@ Customers also often lack access to detailed menu information, including ingredi
 - Manage menu items and categories.
 - Add, edit, or remove food items.
 - Update ingredients and calorie information.
+- Track dish availability using restaurant-friendly levels such as regular, limited, sold out, and unavailable.
 - View all orders and receipts.
 - Categorize receipts by payment type, date, and order status.
 - Generate sales reports.
+- Moderate customer reviews.
 
 ## Core Features
 
@@ -67,8 +71,14 @@ Customers also often lack access to detailed menu information, including ingredi
 - Receipt history for registered users
 - Menu display with ingredients
 - Calorie information display
+- Prep time estimates
+- Dietary and allergen information
+- Favorites
+- Verified-purchase reviews
 - Payment processing
 - Administrative dashboard
+- Menu availability management
+- Active order queue
 - Sales and receipt reporting
 
 ## Payment Requirements
@@ -84,7 +94,7 @@ The system should support:
 
 - Front end: ASP.NET Core MVC, HTML5, CSS3, Bootstrap, JavaScript
 - Back end: ASP.NET Core, C#
-- Authentication: ASP.NET Identity
+- Authentication: ASP.NET Core cookie authentication with customer and administrator roles
 - Database: MongoDB Atlas using MongoDB collections
 - Data access: MongoDB Driver for .NET
 
@@ -98,11 +108,11 @@ The system should support:
 | 7-8 | Receipt generation, order history, and administrator dashboard development |
 | 9-10 | Testing, debugging, reporting features, deployment, documentation, and presentation preparation |
 
-## Open Product Questions
+## Product Decisions
 
-- Which payment provider should be used for credit and debit card processing?
-- Should PayPal and e-transfer be fully automated, or should some methods use manual verification?
-- Should orders support pickup only, delivery only, or both?
-- What administrator roles are required beyond owner or administrator?
-- What sales reports are required for the first version?
-- Should menu calorie information be exact, estimated, or administrator-provided?
+- Payments are demo captures only for this version; no real payment provider is connected.
+- PayPal and e-transfer are recorded as payment methods, not fully automated transactions.
+- Orders support both pickup and delivery.
+- The first version uses two roles: customer and administrator.
+- Sales reports include date, payment method, status, search filtering, CSV export, payment/status breakdowns, top dishes, and daily sales.
+- Calories and prep times are administrator-provided estimates.

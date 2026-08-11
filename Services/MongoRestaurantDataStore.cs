@@ -24,7 +24,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
 
         _menuItems = database.GetCollection<MenuItem>(options.Value.MenuItemsCollection);
         _orders = database.GetCollection<Order>(options.Value.OrdersCollection);
-        _reviews = database.GetCollection<MenuReview>("reviews");
+        _reviews = database.GetCollection<MenuReview>(options.Value.ReviewsCollection);
         _users = database.GetCollection<UserAccount>(options.Value.UsersCollection);
 
         EnsureSeedData();

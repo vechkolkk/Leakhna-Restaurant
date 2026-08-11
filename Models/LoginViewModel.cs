@@ -4,11 +4,11 @@ namespace RestaurantApp.Models;
 
 public class LoginViewModel
 {
-    [Required]
-    [EmailAddress]
+    [Required(ErrorMessage = "Enter the email address for your account.")]
+    [EmailAddress(ErrorMessage = "Enter a valid email address, like name@example.com.")]
     public string Email { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Enter your password.")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 

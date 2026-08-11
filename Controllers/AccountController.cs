@@ -39,7 +39,7 @@ public class AccountController : Controller
 
         if (user is null)
         {
-            ModelState.AddModelError(string.Empty, "Invalid email or password.");
+            ModelState.AddModelError(string.Empty, "We could not sign you in with that email and password.");
             return View(login);
         }
 
@@ -147,7 +147,7 @@ public class AccountController : Controller
 
         if (!_userService.ChangePassword(user.Id, password))
         {
-            ModelState.AddModelError("Password.CurrentPassword", "Current password is incorrect.");
+            ModelState.AddModelError("Password.CurrentPassword", "That does not match your current password.");
             return View(nameof(Profile), BuildProfileViewModel(user, password));
         }
 
