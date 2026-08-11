@@ -18,6 +18,8 @@ public class UserAccount
 
     public string PasswordSalt { get; set; } = string.Empty;
 
+    public IReadOnlyList<string> FavoriteMenuItemIds { get; set; } = [];
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 

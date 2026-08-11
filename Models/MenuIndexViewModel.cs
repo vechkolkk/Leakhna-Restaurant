@@ -7,6 +7,8 @@ public class MenuIndexViewModel
     public IReadOnlyDictionary<string, ReviewSummary> ReviewSummaries { get; set; } =
         new Dictionary<string, ReviewSummary>();
 
+    public IReadOnlySet<string> FavoriteMenuItemIds { get; set; } = new HashSet<string>();
+
     public IReadOnlyList<string> Categories { get; set; } = [];
 
     public IReadOnlyList<string> DietaryTags { get; set; } = [];
@@ -22,4 +24,6 @@ public class MenuIndexViewModel
     public string? Search { get; set; }
 
     public bool AvailableOnly { get; set; } = true;
+
+    public bool FavoritesOnly { get; set; }
 }

@@ -70,6 +70,37 @@ public class PersistentUserService : IUserService
             string.IsNullOrWhiteSpace(profile.DefaultAddress) ? null : profile.DefaultAddress.Trim());
     }
 
+    public bool AddFavorite(string id, string menuItemId)
+    {
+        var user = GetById(id);
+
+        if (user is null || string.IsNullOrWhiteSpace(menuItemId))
+        {
+            return false;
+        }
+
+        var favorites = user.FavoriteMenuItemIds
+            .Append(menuItemId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        return _dataStore.UpdateUserFavorites(id, favorites);
+    }
+
+    public bool RemoveFavorite(string id, string menuItemId)
+    {
+        var user = GetById(id);
+
+        if (user is null || string.IsNullOrWhiteSpace(menuItemId))
+        {
+            return false;
+        }
+
+        var favorites = user.FavoriteMenuItemIds
+            .Where(itemId => !itemId.Equals(menuItemId, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        return _dataStore.UpdateUserFavorites(id, favorites);
+    }
+
     public bool ChangePassword(string id, PasswordChangeViewModel password)
     {
         var user = GetById(id);

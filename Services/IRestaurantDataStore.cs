@@ -12,6 +12,8 @@ public interface IRestaurantDataStore
 
     UserAccount? UpdateUserProfile(string id, string fullName, string? phone, string? defaultAddress);
 
+    bool UpdateUserFavorites(string id, IReadOnlyList<string> favoriteMenuItemIds);
+
     bool UpdateUserPassword(string id, string passwordHash, string passwordSalt);
 
     Order AddOrder(Order order);

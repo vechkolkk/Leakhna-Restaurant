@@ -56,6 +56,13 @@
             <input class="form-check-input" asp-for="AvailableOnly" />
             <span>Available only</span>
         </label>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <label class="filter-check">
+                <input class="form-check-input" asp-for="FavoritesOnly" />
+                <span>Favorites only</span>
+            </label>
+        }
         <button class="btn btn-primary" type="submit">Apply</button>
         <a class="btn btn-outline-dark" asp-action="Index">Reset</a>
     </form>
@@ -73,6 +80,7 @@
             @foreach (var item in Model.Items)
             {
                 var reviewSummary = Model.ReviewSummaries.GetValueOrDefault(item.Id);
+                var isFavorite = Model.FavoriteMenuItemIds.Contains(item.Id);
                 <div class="col-md-6 col-xl-4">
                     <article class="menu-card">
                         <div class="dish-art @item.AccentClass">
@@ -105,6 +113,14 @@
                             }
                             <div class="d-flex gap-2 mt-3">
                                 <a class="btn btn-outline-dark flex-fill" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <form asp-action="@(isFavorite ? "RemoveFavorite" : "AddFavorite")" method="post" class="flex-fill">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                        <button class="btn btn-outline-dark w-100" type="submit">@(isFavorite ? "Saved" : "Save")</button>
+                                    </form>
+                                }
                                 <form asp-controller="Cart" asp-action="Add" method="post" class="flex-fill">
                                     <input type="hidden" name="id" value="@item.Id" />
                                     <button class="btn btn-primary w-100" type="submit" disabled="@(!item.IsOrderable)">Add</button>

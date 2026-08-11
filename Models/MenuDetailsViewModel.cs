@@ -12,5 +12,7 @@ public class MenuDetailsViewModel
 
     public bool CanReview { get; set; }
 
+    public bool IsFavorite { get; set; }
+
     public string ReviewGateMessage { get; set; } = string.Empty;
 }

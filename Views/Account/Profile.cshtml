@@ -74,6 +74,36 @@
                     <button class="btn btn-outline-dark w-100" type="submit">Change Password</button>
                 </form>
             </aside>
+
+            <aside class="summary-panel mt-4">
+                <h2>Favorites</h2>
+                @if (Model.FavoriteMenuItems.Count == 0)
+                {
+                    <p class="text-muted">Saved dishes will appear here for fast reordering.</p>
+                    <a class="btn btn-outline-dark w-100" asp-controller="Menu" asp-action="Index">Browse Menu</a>
+                }
+                else
+                {
+                    <div class="favorite-list">
+                        @foreach (var favorite in Model.FavoriteMenuItems)
+                        {
+                            <article class="favorite-row">
+                                <div>
+                                    <strong>@favorite.Name</strong>
+                                    <span>@favorite.Price.ToString("C") - @favorite.AvailabilityStatus</span>
+                                </div>
+                                <div class="favorite-actions">
+                                    <a class="btn btn-outline-dark btn-sm" asp-controller="Menu" asp-action="Details" asp-route-id="@favorite.Id">View</a>
+                                    <form asp-action="RemoveFavorite" method="post">
+                                        <input type="hidden" name="id" value="@favorite.Id" />
+                                        <button class="btn btn-outline-danger btn-sm" type="submit">Remove</button>
+                                    </form>
+                                </div>
+                            </article>
+                        }
+                    </div>
+                }
+            </aside>
         </div>
         <div class="col-lg-8">
             <h2 class="section-heading">Receipt history</h2>

@@ -96,6 +96,43 @@ public class InMemoryUserService : IUserService
         }
     }
 
+    public bool AddFavorite(string id, string menuItemId)
+    {
+        lock (_lock)
+        {
+            var user = _users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null || string.IsNullOrWhiteSpace(menuItemId))
+            {
+                return false;
+            }
+
+            user.FavoriteMenuItemIds = user.FavoriteMenuItemIds
+                .Append(menuItemId)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return true;
+        }
+    }
+
+    public bool RemoveFavorite(string id, string menuItemId)
+    {
+        lock (_lock)
+        {
+            var user = _users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null || string.IsNullOrWhiteSpace(menuItemId))
+            {
+                return false;
+            }
+
+            user.FavoriteMenuItemIds = user.FavoriteMenuItemIds
+                .Where(itemId => !itemId.Equals(menuItemId, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            return true;
+        }
+    }
+
     public bool ChangePassword(string id, PasswordChangeViewModel password)
     {
         lock (_lock)

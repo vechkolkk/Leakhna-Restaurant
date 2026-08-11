@@ -100,6 +100,18 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         return result.MatchedCount == 0 ? null : _users.Find(user => user.Id == id).FirstOrDefault();
     }
 
+    public bool UpdateUserFavorites(string id, IReadOnlyList<string> favoriteMenuItemIds)
+    {
+        var favorites = favoriteMenuItemIds
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var update = Builders<UserAccount>.Update
+            .Set(user => user.FavoriteMenuItemIds, favorites);
+
+        var result = _users.UpdateOne(user => user.Id == id, update);
+        return result.ModifiedCount > 0 || result.MatchedCount > 0;
+    }
+
     public bool UpdateUserPassword(string id, string passwordHash, string passwordSalt)
     {
         var update = Builders<UserAccount>.Update

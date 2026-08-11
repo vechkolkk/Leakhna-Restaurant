@@ -29,9 +29,13 @@ public class MenuController : Controller
         string? dietaryTag,
         string? avoidAllergen,
         string? search,
-        bool availableOnly = true)
+        bool availableOnly = true,
+        bool favoritesOnly = false)
     {
         var menuItems = _menuService.GetMenuItems().AsEnumerable();
+        var currentUser = GetCurrentUser();
+        var favoriteIds = currentUser?.FavoriteMenuItemIds.ToHashSet(StringComparer.OrdinalIgnoreCase) ??
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         if (!string.IsNullOrWhiteSpace(category))
         {
@@ -66,10 +70,18 @@ public class MenuController : Controller
             menuItems = menuItems.Where(item => item.IsAvailable);
         }
 
+        if (favoritesOnly)
+        {
+            menuItems = currentUser is null
+                ? []
+                : menuItems.Where(item => favoriteIds.Contains(item.Id));
+        }
+
         return View(new MenuIndexViewModel
         {
             Items = menuItems.OrderBy(item => item.Category).ThenBy(item => item.Name).ToList(),
             ReviewSummaries = _reviewService.GetReviewSummaries(),
+            FavoriteMenuItemIds = favoriteIds,
             Categories = _menuService.GetCategories(),
             DietaryTags = _menuService.GetDietaryTags(),
             Allergens = _menuService.GetAllergens(),
@@ -77,7 +89,8 @@ public class MenuController : Controller
             DietaryTag = dietaryTag,
             AvoidAllergen = avoidAllergen,
             Search = search,
-            AvailableOnly = availableOnly
+            AvailableOnly = availableOnly,
+            FavoritesOnly = favoritesOnly
         });
     }
 
@@ -94,6 +107,43 @@ public class MenuController : Controller
         {
             ReviewerName = User.Identity?.IsAuthenticated == true ? User.Identity.Name ?? string.Empty : string.Empty
         }));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddFavorite(string id, string? returnUrl = null)
+    {
+        var currentUser = GetCurrentUser();
+
+        if (currentUser is null)
+        {
+            return Challenge();
+        }
+
+        if (_menuService.GetMenuItem(id) is null)
+        {
+            return NotFound();
+        }
+
+        _userService.AddFavorite(currentUser.Id, id);
+        TempData["CartMessage"] = "Dish saved to favorites.";
+        return RedirectToLocal(returnUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult RemoveFavorite(string id, string? returnUrl = null)
+    {
+        var currentUser = GetCurrentUser();
+
+        if (currentUser is null)
+        {
+            return Challenge();
+        }
+
+        _userService.RemoveFavorite(currentUser.Id, id);
+        TempData["CartMessage"] = "Dish removed from favorites.";
+        return RedirectToLocal(returnUrl);
     }
 
     [HttpPost]
@@ -132,6 +182,7 @@ public class MenuController : Controller
             new ReviewSummary { MenuItemId = menuItem.Id };
         var currentUser = GetCurrentUser();
         var canReview = CanReviewMenuItem(menuItem.Id, currentUser);
+        var isFavorite = currentUser?.FavoriteMenuItemIds.Contains(menuItem.Id, StringComparer.OrdinalIgnoreCase) == true;
 
         return new MenuDetailsViewModel
         {
@@ -140,6 +191,7 @@ public class MenuController : Controller
             ReviewSummary = summary,
             ReviewForm = reviewForm,
             CanReview = canReview,
+            IsFavorite = isFavorite,
             ReviewGateMessage = GetReviewGateMessage(currentUser, canReview)
         };
     }
@@ -173,5 +225,15 @@ public class MenuController : Controller
         return user is null
             ? "Sign in with the account used for checkout to review dishes you bought."
             : "You can review this dish after buying it.";
+    }
+
+    private IActionResult RedirectToLocal(string? returnUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }

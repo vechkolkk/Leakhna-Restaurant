@@ -79,6 +79,26 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         }
     }
 
+    public bool UpdateUserFavorites(string id, IReadOnlyList<string> favoriteMenuItemIds)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            var user = snapshot.Users.FirstOrDefault(user => user.Id == id);
+
+            if (user is null)
+            {
+                return false;
+            }
+
+            user.FavoriteMenuItemIds = favoriteMenuItemIds
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            SaveSnapshot(snapshot);
+            return true;
+        }
+    }
+
     public bool UpdateUserPassword(string id, string passwordHash, string passwordSalt)
     {
         lock (_lock)

@@ -9,4 +9,6 @@ public class ProfileViewModel
     public PasswordChangeViewModel Password { get; set; } = new();
 
     public IReadOnlyList<Order> Orders { get; set; } = [];
+
+    public IReadOnlyList<MenuItem> FavoriteMenuItems { get; set; } = [];
 }

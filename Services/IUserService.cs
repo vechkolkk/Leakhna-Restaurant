@@ -16,5 +16,9 @@ public interface IUserService
 
     UserAccount? UpdateProfile(string id, ProfileUpdateViewModel profile);
 
+    bool AddFavorite(string id, string menuItemId);
+
+    bool RemoveFavorite(string id, string menuItemId);
+
     bool ChangePassword(string id, PasswordChangeViewModel password);
 }

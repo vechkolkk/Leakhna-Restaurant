@@ -11,12 +11,14 @@ namespace RestaurantApp.Controllers;
 public class AccountController : Controller
 {
     private readonly IOrderService _orderService;
+    private readonly IMenuService _menuService;
     private readonly IUserService _userService;
 
-    public AccountController(IUserService userService, IOrderService orderService)
+    public AccountController(IUserService userService, IOrderService orderService, IMenuService menuService)
     {
         _userService = userService;
         _orderService = orderService;
+        _menuService = menuService;
     }
 
     public IActionResult Login(string? returnUrl = null)
@@ -86,7 +88,8 @@ public class AccountController : Controller
         {
             User = user,
             Profile = ProfileUpdateViewModelFromUser(user),
-            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
+            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email),
+            FavoriteMenuItems = GetFavoriteMenuItems(user)
         });
     }
 
@@ -108,7 +111,8 @@ public class AccountController : Controller
             {
                 User = user,
                 Profile = profile,
-                Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
+                Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email),
+                FavoriteMenuItems = GetFavoriteMenuItems(user)
             });
         }
 
@@ -189,6 +193,23 @@ public class AccountController : Controller
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public IActionResult RemoveFavorite(string id)
+    {
+        var user = GetCurrentUser();
+
+        if (user is null)
+        {
+            return Challenge();
+        }
+
+        _userService.RemoveFavorite(user.Id, id);
+        TempData["ProfileMessage"] = "Favorite removed.";
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -223,8 +244,18 @@ public class AccountController : Controller
             User = user,
             Profile = ProfileUpdateViewModelFromUser(user),
             Password = password ?? new PasswordChangeViewModel(),
-            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email)
+            Orders = _orderService.GetOrdersForCustomer(user.Id, user.Email),
+            FavoriteMenuItems = GetFavoriteMenuItems(user)
         };
+    }
+
+    private IReadOnlyList<MenuItem> GetFavoriteMenuItems(UserAccount user)
+    {
+        var favorites = user.FavoriteMenuItemIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return _menuService.GetMenuItems()
+            .Where(item => favorites.Contains(item.Id))
+            .OrderBy(item => item.Name)
+            .ToList();
     }
 
     private static bool IsCustomerOrder(Order order, UserAccount user)
