@@ -23,4 +23,21 @@ public class CartViewModel
     public decimal Total => DiscountedSubtotal + Tax;
 
     public int ItemCount => Lines.Sum(line => line.Quantity);
+
+    public int EstimatedPrepMinutes
+    {
+        get
+        {
+            if (Lines.Count == 0)
+            {
+                return 0;
+            }
+
+            var longestDish = Lines.Max(line => line.MenuItem.EstimatedPrepMinutes);
+            var multiItemBuffer = Math.Min(10, Math.Max(0, ItemCount - 1) * 2);
+            return longestDish + multiItemBuffer;
+        }
+    }
+
+    public DateTime EstimatedReadyAt => DateTime.Now.AddMinutes(EstimatedPrepMinutes);
 }

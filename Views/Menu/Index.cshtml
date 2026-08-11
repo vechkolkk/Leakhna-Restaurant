@@ -94,6 +94,7 @@
                             <p>@item.Description</p>
                             <div class="dish-meta">
                                 <span>@item.EstimatedCalories calories</span>
+                                <span>@item.EstimatedPrepMinutes min</span>
                                 <span>@item.Ingredients.Count ingredients</span>
                                 <span>@(reviewSummary?.DisplayText ?? "No reviews yet")</span>
                                 <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>

@@ -28,6 +28,10 @@ public class Order
 
     public DateTime? RequestedFulfillmentAt { get; set; }
 
+    public int EstimatedPrepMinutes { get; set; }
+
+    public DateTime? EstimatedReadyAt { get; set; }
+
     public bool IsGuestCheckout { get; set; }
 
     public string Status { get; set; } = "Paid";

@@ -25,6 +25,7 @@
             <div class="detail-metrics">
                 <span>@item.Price.ToString("C")</span>
                 <span>@item.EstimatedCalories calories</span>
+                <span>@item.EstimatedPrepMinutes min prep</span>
                 <span>@Model.ReviewSummary.DisplayText</span>
                 <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>
             </div>

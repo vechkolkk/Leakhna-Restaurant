@@ -45,6 +45,10 @@
                 <dt>Requested</dt>
                 <dd>@(Model.FulfillmentTiming == "Scheduled" && Model.RequestedFulfillmentAt.HasValue ? Model.RequestedFulfillmentAt.Value.ToString("MMM d, yyyy h:mm tt") : "ASAP")</dd>
             </div>
+            <div>
+                <dt>Estimated ready</dt>
+                <dd>@(Model.EstimatedReadyAt?.ToString("MMM d, yyyy h:mm tt") ?? $"{Model.EstimatedPrepMinutes} min")</dd>
+            </div>
         </dl>
 
         @if (!string.IsNullOrWhiteSpace(Model.PaymentSummary))
@@ -88,6 +92,7 @@
                 <h2>Fulfillment</h2>
                 <p>@Model.OrderType</p>
                 <p>@(Model.FulfillmentTiming == "Scheduled" && Model.RequestedFulfillmentAt.HasValue ? Model.RequestedFulfillmentAt.Value.ToString("MMM d, yyyy h:mm tt") : "ASAP")</p>
+                <p>@Model.EstimatedPrepMinutes min estimate</p>
                 @if (!string.IsNullOrWhiteSpace(Model.DeliveryAddress))
                 {
                     <p>@Model.DeliveryAddress</p>

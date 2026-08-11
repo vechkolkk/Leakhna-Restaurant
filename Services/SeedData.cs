@@ -18,6 +18,7 @@ public static class SeedData
             DietaryTags = ["High protein", "Gluten friendly"],
             Allergens = ["Fish sauce"],
             EstimatedCalories = 640,
+            EstimatedPrepMinutes = 18,
             Price = 15.99m,
             AvailabilityLevel = MenuAvailability.Regular,
             AccentClass = "accent-green"
@@ -32,6 +33,7 @@ public static class SeedData
             DietaryTags = ["High protein", "Gluten friendly"],
             Allergens = ["Soy"],
             EstimatedCalories = 720,
+            EstimatedPrepMinutes = 20,
             Price = 18.49m,
             AvailabilityLevel = MenuAvailability.Regular,
             AccentClass = "accent-red"
@@ -46,6 +48,7 @@ public static class SeedData
             DietaryTags = ["Vegetarian", "Gluten friendly"],
             Allergens = ["Coconut"],
             EstimatedCalories = 590,
+            EstimatedPrepMinutes = 16,
             Price = 14.49m,
             AvailabilityLevel = MenuAvailability.Regular,
             AccentClass = "accent-gold"
@@ -60,6 +63,7 @@ public static class SeedData
             DietaryTags = ["Vegetarian", "Light"],
             Allergens = ["Peanuts"],
             EstimatedCalories = 310,
+            EstimatedPrepMinutes = 10,
             Price = 8.99m,
             AvailabilityLevel = MenuAvailability.Regular,
             AccentClass = "accent-teal"
@@ -74,6 +78,7 @@ public static class SeedData
             DietaryTags = ["Vegetarian"],
             Allergens = ["Coconut", "Sesame"],
             EstimatedCalories = 430,
+            EstimatedPrepMinutes = 8,
             Price = 7.99m,
             AvailabilityLevel = MenuAvailability.Limited,
             AccentClass = "accent-orange"
@@ -88,6 +93,7 @@ public static class SeedData
             DietaryTags = ["Vegetarian"],
             Allergens = ["Milk"],
             EstimatedCalories = 180,
+            EstimatedPrepMinutes = 4,
             Price = 4.99m,
             AvailabilityLevel = MenuAvailability.Regular,
             AccentClass = "accent-blue"
@@ -133,6 +139,7 @@ public static class SeedData
             DietaryTags = item.DietaryTags.ToList(),
             Allergens = item.Allergens.ToList(),
             EstimatedCalories = item.EstimatedCalories,
+            EstimatedPrepMinutes = item.EstimatedPrepMinutes,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
             AvailabilityLevel = item.AvailabilityStatus,
@@ -160,6 +167,12 @@ public static class SeedData
         if (item.Allergens.Count == 0 && seedItem.Allergens.Count > 0)
         {
             item.Allergens = seedItem.Allergens.ToList();
+            changed = true;
+        }
+
+        if (item.EstimatedPrepMinutes <= 0)
+        {
+            item.EstimatedPrepMinutes = seedItem.EstimatedPrepMinutes;
             changed = true;
         }
 

@@ -28,6 +28,10 @@ public class PersistentOrderService : IOrderService
             DeliveryAddress = checkout.DeliveryAddress,
             FulfillmentTiming = checkout.FulfillmentTiming,
             RequestedFulfillmentAt = checkout.RequestedFulfillmentAt,
+            EstimatedPrepMinutes = cart.EstimatedPrepMinutes,
+            EstimatedReadyAt = checkout.FulfillmentTiming == "Scheduled" && checkout.RequestedFulfillmentAt.HasValue
+                ? checkout.RequestedFulfillmentAt.Value
+                : DateTime.Now.AddMinutes(cart.EstimatedPrepMinutes),
             IsGuestCheckout = checkout.IsGuestCheckout,
             Status = checkout.PaymentMethod == "E-Transfer" ? "Awaiting Verification" : "Paid",
             Notes = checkout.Notes,

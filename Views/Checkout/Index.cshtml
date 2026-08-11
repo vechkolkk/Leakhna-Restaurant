@@ -151,6 +151,7 @@
                                 <small>@line.Notes</small>
                             }
                             <small>@line.MenuItem.AvailabilityStatus</small>
+                            <small>@line.MenuItem.EstimatedPrepMinutes min prep</small>
                         </span>
                         <strong>@line.LineTotal.ToString("C")</strong>
                     </div>
@@ -158,6 +159,10 @@
                 <div class="summary-total">
                     <span>Subtotal</span>
                     <strong>@cart.Subtotal.ToString("C")</strong>
+                </div>
+                <div class="summary-total">
+                    <span>Estimated ready</span>
+                    <strong>@cart.EstimatedPrepMinutes min</strong>
                 </div>
                 @if (cart.Discount > 0)
                 {

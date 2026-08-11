@@ -18,6 +18,8 @@ public class MenuItem
 
     public int EstimatedCalories { get; set; }
 
+    public int EstimatedPrepMinutes { get; set; } = 15;
+
     public decimal Price { get; set; }
 
     public bool IsAvailable { get; set; } = true;

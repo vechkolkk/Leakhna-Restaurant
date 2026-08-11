@@ -39,6 +39,7 @@
                                 <p>@line.MenuItem.Description</p>
                                 <strong>@line.MenuItem.Price.ToString("C") each</strong>
                                 <span class="availability-note">@line.MenuItem.AvailabilityStatus</span>
+                                <span class="availability-note">@line.MenuItem.EstimatedPrepMinutes min prep</span>
                             </div>
                             <form asp-action="Update" method="post" class="cart-item-controls">
                                 <input type="hidden" name="id" value="@line.MenuItem.Id" />
@@ -71,6 +72,10 @@
                     <div class="summary-line">
                         <span>Items</span>
                         <strong>@Model.ItemCount</strong>
+                    </div>
+                    <div class="summary-line">
+                        <span>Estimated ready</span>
+                        <strong>@Model.EstimatedPrepMinutes min</strong>
                     </div>
                     <div class="summary-line">
                         <span>Subtotal</span>

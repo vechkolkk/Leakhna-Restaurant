@@ -28,6 +28,10 @@ public class MenuItemFormViewModel
     [Display(Name = "Estimated calories")]
     public int EstimatedCalories { get; set; }
 
+    [Range(1, 180)]
+    [Display(Name = "Prep minutes")]
+    public int EstimatedPrepMinutes { get; set; } = 15;
+
     [Range(0.01, 1000)]
     public decimal Price { get; set; }
 
@@ -53,6 +57,7 @@ public class MenuItemFormViewModel
             DietaryTagsText = string.Join(", ", item.DietaryTags),
             AllergensText = string.Join(", ", item.Allergens),
             EstimatedCalories = item.EstimatedCalories,
+            EstimatedPrepMinutes = item.EstimatedPrepMinutes,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
             AvailabilityLevel = item.AvailabilityStatus,
@@ -72,6 +77,7 @@ public class MenuItemFormViewModel
             DietaryTags = SplitCsv(DietaryTagsText),
             Allergens = SplitCsv(AllergensText),
             EstimatedCalories = EstimatedCalories,
+            EstimatedPrepMinutes = EstimatedPrepMinutes,
             Price = Price,
             IsAvailable = IsAvailable,
             AvailabilityLevel = AvailabilityLevel,
