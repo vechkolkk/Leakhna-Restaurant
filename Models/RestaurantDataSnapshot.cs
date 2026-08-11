@@ -7,4 +7,6 @@ public class RestaurantDataSnapshot
     public List<UserAccount> Users { get; set; } = [];
 
     public List<Order> Orders { get; set; } = [];
+
+    public List<MenuReview> Reviews { get; set; } = [];
 }

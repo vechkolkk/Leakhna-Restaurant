@@ -425,6 +425,55 @@ a:hover {
   margin-top: 0;
 }
 
+.review-section {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+}
+
+.review-list {
+  display: grid;
+  gap: .85rem;
+}
+
+.review-moderation-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.review-card {
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(65, 43, 26, .08);
+  padding: 1rem;
+}
+
+.review-card > div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.review-card span {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.review-rating {
+  color: var(--rust);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  margin: .5rem 0;
+}
+
+.review-form {
+  align-self: start;
+}
+
 .availability-note,
 .admin-availability-warning {
   color: var(--rust);
@@ -1008,6 +1057,8 @@ a:hover {
   .menu-filter,
   .metric-grid,
   .queue-card,
+  .review-moderation-grid,
+  .review-section,
   .report-filter,
   .report-grid,
   .receipt-detail-grid,

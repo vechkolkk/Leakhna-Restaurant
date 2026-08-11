@@ -9,6 +9,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
 {
     private readonly IMongoCollection<MenuItem> _menuItems;
     private readonly IMongoCollection<Order> _orders;
+    private readonly IMongoCollection<MenuReview> _reviews;
     private readonly IMongoCollection<UserAccount> _users;
 
     public MongoRestaurantDataStore(IOptions<MongoDbOptions> options)
@@ -23,6 +24,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
 
         _menuItems = database.GetCollection<MenuItem>(options.Value.MenuItemsCollection);
         _orders = database.GetCollection<Order>(options.Value.OrdersCollection);
+        _reviews = database.GetCollection<MenuReview>("reviews");
         _users = database.GetCollection<UserAccount>(options.Value.UsersCollection);
 
         EnsureSeedData();
@@ -38,6 +40,10 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
             Orders = _orders
                 .Find(Builders<Order>.Filter.Empty)
                 .SortByDescending(order => order.CreatedAt)
+                .ToList(),
+            Reviews = _reviews
+                .Find(Builders<MenuReview>.Filter.Empty)
+                .SortByDescending(review => review.CreatedAt)
                 .ToList()
         };
 
@@ -54,6 +60,7 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         _menuItems.DeleteMany(Builders<MenuItem>.Filter.Empty);
         _users.DeleteMany(Builders<UserAccount>.Filter.Empty);
         _orders.DeleteMany(Builders<Order>.Filter.Empty);
+        _reviews.DeleteMany(Builders<MenuReview>.Filter.Empty);
 
         if (snapshot.MenuItems.Count > 0)
         {
@@ -68,6 +75,11 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         if (snapshot.Orders.Count > 0)
         {
             _orders.InsertMany(snapshot.Orders);
+        }
+
+        if (snapshot.Reviews.Count > 0)
+        {
+            _reviews.InsertMany(snapshot.Reviews);
         }
     }
 
@@ -114,6 +126,18 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
         return result.ModifiedCount > 0;
     }
 
+    public MenuReview AddReview(MenuReview review)
+    {
+        _reviews.InsertOne(review);
+        return review;
+    }
+
+    public bool DeleteReview(string id)
+    {
+        var result = _reviews.DeleteOne(review => review.Id == id);
+        return result.DeletedCount > 0;
+    }
+
     private void EnsureSeedData()
     {
         if (_menuItems.CountDocuments(Builders<MenuItem>.Filter.Empty) == 0)
@@ -139,6 +163,9 @@ public class MongoRestaurantDataStore : IRestaurantDataStore
 
         _orders.Indexes.CreateOne(new CreateIndexModel<Order>(
             Builders<Order>.IndexKeys.Ascending(order => order.CustomerId)));
+
+        _reviews.Indexes.CreateOne(new CreateIndexModel<MenuReview>(
+            Builders<MenuReview>.IndexKeys.Ascending(review => review.MenuItemId)));
 
         _menuItems.Indexes.CreateOne(new CreateIndexModel<MenuItem>(
             Builders<MenuItem>.IndexKeys.Ascending(item => item.Category)));

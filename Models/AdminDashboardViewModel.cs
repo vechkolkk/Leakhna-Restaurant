@@ -10,6 +10,8 @@ public class AdminDashboardViewModel
 
     public IReadOnlyList<CustomerSummaryItem> Customers { get; set; } = [];
 
+    public IReadOnlyList<MenuReview> Reviews { get; set; } = [];
+
     public DateTime? DateFrom { get; set; }
 
     public DateTime? DateTo { get; set; }
@@ -45,4 +47,6 @@ public class AdminDashboardViewModel
     public int ActiveOrderCount => ActiveOrderQueue.Sum(group => group.Orders.Count);
 
     public int CustomerCount => Customers.Count;
+
+    public int ReviewCount => Reviews.Count;
 }

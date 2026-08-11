@@ -17,4 +17,8 @@ public interface IRestaurantDataStore
     Order AddOrder(Order order);
 
     bool UpdateOrderStatus(string id, string status, string paymentStatus);
+
+    MenuReview AddReview(MenuReview review);
+
+    bool DeleteReview(string id);
 }

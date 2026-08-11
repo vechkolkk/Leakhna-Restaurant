@@ -39,6 +39,7 @@ if (persistenceProvider.Equals("Json", StringComparison.OrdinalIgnoreCase))
     builder.Services.AddSingleton<RestaurantApp.Services.IRestaurantDataStore, RestaurantApp.Services.JsonRestaurantDataStore>();
     builder.Services.AddSingleton<RestaurantApp.Services.IMenuService, RestaurantApp.Services.PersistentMenuService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IOrderService, RestaurantApp.Services.PersistentOrderService>();
+    builder.Services.AddSingleton<RestaurantApp.Services.IReviewService, RestaurantApp.Services.PersistentReviewService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IUserService, RestaurantApp.Services.PersistentUserService>();
 }
 else if (persistenceProvider.Equals("MongoDb", StringComparison.OrdinalIgnoreCase))
@@ -46,12 +47,14 @@ else if (persistenceProvider.Equals("MongoDb", StringComparison.OrdinalIgnoreCas
     builder.Services.AddSingleton<RestaurantApp.Services.IRestaurantDataStore, RestaurantApp.Services.MongoRestaurantDataStore>();
     builder.Services.AddSingleton<RestaurantApp.Services.IMenuService, RestaurantApp.Services.PersistentMenuService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IOrderService, RestaurantApp.Services.PersistentOrderService>();
+    builder.Services.AddSingleton<RestaurantApp.Services.IReviewService, RestaurantApp.Services.PersistentReviewService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IUserService, RestaurantApp.Services.PersistentUserService>();
 }
 else if (persistenceProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
 {
     builder.Services.AddSingleton<RestaurantApp.Services.IMenuService, RestaurantApp.Services.InMemoryMenuService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IOrderService, RestaurantApp.Services.InMemoryOrderService>();
+    builder.Services.AddSingleton<RestaurantApp.Services.IReviewService, RestaurantApp.Services.InMemoryReviewService>();
     builder.Services.AddSingleton<RestaurantApp.Services.IUserService, RestaurantApp.Services.InMemoryUserService>();
 }
 else

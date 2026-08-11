@@ -72,6 +72,7 @@
         <div class="row g-4">
             @foreach (var item in Model.Items)
             {
+                var reviewSummary = Model.ReviewSummaries.GetValueOrDefault(item.Id);
                 <div class="col-md-6 col-xl-4">
                     <article class="menu-card">
                         <div class="dish-art @item.AccentClass">
@@ -86,6 +87,7 @@
                             <div class="dish-meta">
                                 <span>@item.EstimatedCalories calories</span>
                                 <span>@item.Ingredients.Count ingredients</span>
+                                <span>@(reviewSummary?.DisplayText ?? "No reviews yet")</span>
                                 <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>
                             </div>
                             @if (item.DietaryTags.Count > 0 || item.Allergens.Count > 0)

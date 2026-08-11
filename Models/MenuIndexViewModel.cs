@@ -4,6 +4,9 @@ public class MenuIndexViewModel
 {
     public IReadOnlyList<MenuItem> Items { get; set; } = [];
 
+    public IReadOnlyDictionary<string, ReviewSummary> ReviewSummaries { get; set; } =
+        new Dictionary<string, ReviewSummary>();
+
     public IReadOnlyList<string> Categories { get; set; } = [];
 
     public IReadOnlyList<string> DietaryTags { get; set; } = [];

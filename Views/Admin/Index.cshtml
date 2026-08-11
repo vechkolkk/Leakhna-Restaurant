@@ -39,6 +39,10 @@
             <strong>@Model.CustomerCount</strong>
         </div>
         <div class="metric">
+            <span>Reviews</span>
+            <strong>@Model.ReviewCount</strong>
+        </div>
+        <div class="metric">
             <span>Total sales</span>
             <strong>@Model.TotalSales.ToString("C")</strong>
         </div>
@@ -50,6 +54,40 @@
             <span>Average order</span>
             <strong>@Model.AverageOrderValue.ToString("C")</strong>
         </div>
+    </div>
+
+    <div class="mt-4">
+        <h2 class="section-heading">Review moderation</h2>
+        @if (Model.Reviews.Count == 0)
+        {
+            <div class="empty-state compact">
+                <h3>No reviews yet</h3>
+                <p>Verified customer reviews will appear here for moderation.</p>
+            </div>
+        }
+        else
+        {
+            <div class="review-moderation-grid">
+                @foreach (var review in Model.Reviews.Take(6))
+                {
+                    var reviewedItem = Model.MenuItems.FirstOrDefault(item => item.Id == review.MenuItemId);
+                    <article class="review-card">
+                        <div>
+                            <strong>@(reviewedItem?.Name ?? review.MenuItemId)</strong>
+                            <span>@review.Rating / 5</span>
+                        </div>
+                        <p>@review.Comment</p>
+                        <div>
+                            <span>@review.ReviewerName - @review.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</span>
+                            <form asp-action="DeleteReview" method="post">
+                                <input name="id" type="hidden" value="@review.Id" />
+                                <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
     </div>
 
     <div class="mt-4">

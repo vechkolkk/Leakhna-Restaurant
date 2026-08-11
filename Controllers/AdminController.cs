@@ -11,12 +11,18 @@ public class AdminController : Controller
 {
     private readonly IMenuService _menuService;
     private readonly IOrderService _orderService;
+    private readonly IReviewService _reviewService;
     private readonly IUserService _userService;
 
-    public AdminController(IMenuService menuService, IOrderService orderService, IUserService userService)
+    public AdminController(
+        IMenuService menuService,
+        IOrderService orderService,
+        IReviewService reviewService,
+        IUserService userService)
     {
         _menuService = menuService;
         _orderService = orderService;
+        _reviewService = reviewService;
         _userService = userService;
     }
 
@@ -31,6 +37,7 @@ public class AdminController : Controller
             Orders = filteredOrders,
             ActiveOrderQueue = BuildActiveOrderQueue(allOrders),
             Customers = BuildCustomerSummaries(_userService.GetUsers(), allOrders),
+            Reviews = _reviewService.GetReviews(),
             DateFrom = dateFrom,
             DateTo = dateTo,
             PaymentMethod = paymentMethod,
@@ -166,6 +173,24 @@ public class AdminController : Controller
 
         _menuService.DeleteMenuItem(id);
         TempData["AdminMessage"] = $"{item.Name} was removed from the menu.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteReview(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            TempData["AdminMessage"] = "Choose a review before deleting.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var deleted = _reviewService.DeleteReview(id);
+        TempData["AdminMessage"] = deleted
+            ? "Review deleted."
+            : "Could not find that review.";
+
         return RedirectToAction(nameof(Index));
     }
 

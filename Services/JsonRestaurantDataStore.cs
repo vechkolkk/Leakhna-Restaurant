@@ -128,6 +128,35 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         }
     }
 
+    public MenuReview AddReview(MenuReview review)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            snapshot.Reviews.Insert(0, review);
+            SaveSnapshot(snapshot);
+            return review;
+        }
+    }
+
+    public bool DeleteReview(string id)
+    {
+        lock (_lock)
+        {
+            var snapshot = GetSnapshot();
+            var review = snapshot.Reviews.FirstOrDefault(review => review.Id == id);
+
+            if (review is null)
+            {
+                return false;
+            }
+
+            snapshot.Reviews.Remove(review);
+            SaveSnapshot(snapshot);
+            return true;
+        }
+    }
+
     private void EnsureDataFile()
     {
         if (File.Exists(_dataPath))
@@ -145,7 +174,8 @@ public class JsonRestaurantDataStore : IRestaurantDataStore
         {
             MenuItems = SeedData.MenuItems.Select(SeedData.CloneMenuItem).ToList(),
             Users = SeedData.Users,
-            Orders = []
+            Orders = [],
+            Reviews = []
         };
     }
 

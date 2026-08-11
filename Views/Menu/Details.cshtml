@@ -1,61 +1,68 @@
-@model MenuItem
+@model MenuDetailsViewModel
 
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = Model.Item.Name;
+    var item = Model.Item;
 }
 
 <section class="container py-5">
+    @if (TempData["ReviewMessage"] is string reviewMessage)
+    {
+        <div class="alert alert-info">@reviewMessage</div>
+    }
+
     <div class="row g-4 align-items-start">
         <div class="col-lg-5">
-            <div class="dish-art detail-art @Model.AccentClass">
-                <span>@Model.Category</span>
-                <strong>@Model.Name</strong>
+            <div class="dish-art detail-art @item.AccentClass">
+                <span>@item.Category</span>
+                <strong>@item.Name</strong>
             </div>
         </div>
         <div class="col-lg-7">
-            <p class="eyebrow">@Model.Category</p>
-            <h1 class="page-title">@Model.Name</h1>
-            <p class="lead">@Model.Description</p>
+            <p class="eyebrow">@item.Category</p>
+            <h1 class="page-title">@item.Name</h1>
+            <p class="lead">@item.Description</p>
             <div class="detail-metrics">
-                <span>@Model.Price.ToString("C")</span>
-                <span>@Model.EstimatedCalories calories</span>
-                <span class="@(Model.IsLimited ? "availability-pill limited" : Model.IsOrderable ? "" : "availability-pill empty")">@Model.AvailabilityStatus</span>
+                <span>@item.Price.ToString("C")</span>
+                <span>@item.EstimatedCalories calories</span>
+                <span>@Model.ReviewSummary.DisplayText</span>
+                <span class="@(item.IsLimited ? "availability-pill limited" : item.IsOrderable ? "" : "availability-pill empty")">@item.AvailabilityStatus</span>
             </div>
 
             <h2 class="section-heading mt-4">Ingredients</h2>
             <ul class="ingredient-list">
-                @foreach (var ingredient in Model.Ingredients)
+                @foreach (var ingredient in item.Ingredients)
                 {
                     <li>@ingredient</li>
                 }
             </ul>
 
-            @if (Model.DietaryTags.Count > 0)
+            @if (item.DietaryTags.Count > 0)
             {
                 <h2 class="section-heading mt-4">Dietary notes</h2>
                 <div class="tag-row detail-tags">
-                    @foreach (var tag in Model.DietaryTags)
+                    @foreach (var tag in item.DietaryTags)
                     {
                         <span>@tag</span>
                     }
                 </div>
             }
 
-            @if (Model.Allergens.Count > 0)
+            @if (item.Allergens.Count > 0)
             {
                 <h2 class="section-heading mt-4">Allergen warnings</h2>
                 <div class="tag-row detail-tags">
-                    @foreach (var allergen in Model.Allergens)
+                    @foreach (var allergen in item.Allergens)
                     {
                         <span class="allergen">Contains @allergen</span>
                     }
                 </div>
             }
 
-            @if (Model.IsOrderable)
+            @if (item.IsOrderable)
             {
                 <form asp-controller="Cart" asp-action="Add" method="post" class="order-strip mt-4">
-                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="hidden" name="id" value="@item.Id" />
                     <label class="form-label" for="quantity">Quantity</label>
                     <input class="form-control" id="quantity" name="quantity" type="number" value="1" min="1" max="20" />
                     <button class="btn btn-primary" type="submit">Add to Cart</button>
@@ -71,4 +78,80 @@
             }
         </div>
     </div>
+
+    <section class="review-section mt-4">
+        <div>
+            <h2 class="section-heading">Reviews</h2>
+            @if (Model.Reviews.Count == 0)
+            {
+                <div class="empty-state compact">
+                    <h3>No reviews yet</h3>
+                    <p>Be the first to share how this dish tasted.</p>
+                </div>
+            }
+            else
+            {
+                <div class="review-list">
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <article class="review-card">
+                            <div>
+                                <strong>@review.ReviewerName</strong>
+                                <span>@review.CreatedAt.LocalDateTime.ToString("MMM d, yyyy")</span>
+                            </div>
+                            <p class="review-rating">@review.Rating / 5</p>
+                            <p>@review.Comment</p>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.CanReview)
+        {
+            <form asp-action="AddReview" asp-route-id="@item.Id" method="post" class="checkout-form review-form">
+                <h2 class="section-heading">Leave a review</h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label asp-for="ReviewForm.ReviewerName" class="form-label"></label>
+                        <input asp-for="ReviewForm.ReviewerName" class="form-control" />
+                        <span asp-validation-for="ReviewForm.ReviewerName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="ReviewForm.Rating" class="form-label"></label>
+                        <select asp-for="ReviewForm.Rating" class="form-select">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Great</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Okay</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                        <span asp-validation-for="ReviewForm.Rating" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="ReviewForm.Comment" class="form-label"></label>
+                        <textarea asp-for="ReviewForm.Comment" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="ReviewForm.Comment" class="text-danger"></span>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" type="submit">Submit Review</button>
+            </form>
+        }
+        else
+        {
+            <aside class="checkout-form review-form">
+                <h2 class="section-heading">Leave a review</h2>
+                <p class="text-muted">@Model.ReviewGateMessage</p>
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a class="btn btn-outline-dark" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Sign In</a>
+                }
+            </aside>
+        }
+    </section>
 </section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
